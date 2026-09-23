@@ -1,7 +1,7 @@
 #pragma once
 #include "domain/hand.hpp"
 
-#include <sys/types.h>
+#include <vector>
 
 namespace domain {
 
@@ -62,7 +62,7 @@ public:
 
     [[nodiscard]] const PlayerHand& active_hand() const noexcept { return current_hand(); }
     [[nodiscard]] const std::vector<PlayerHand>& hands() const noexcept { return hands_; }
-    [[nodiscard]] u_int8_t active_hand_index() const noexcept { return active_hand_index_; }
+    [[nodiscard]] size_t active_hand_index() const noexcept { return active_hand_index_; }
     void advance_to_next_hand() noexcept {
         if (active_hand_index_ + 1 < hands_.size()) {
             ++active_hand_index_;
@@ -74,7 +74,7 @@ public:
 
 private:
     std::vector<PlayerHand> hands_{1};
-    u_int8_t active_hand_index_{0};
+    size_t active_hand_index_{0};
     int chips_{1000};
 
     [[nodiscard]] PlayerHand& current_hand() noexcept { return hands_[active_hand_index_]; }
