@@ -1,3 +1,4 @@
+#pragma once
 
 namespace domain {
 enum class Suit { Clubs, Diamonds, Hearts, Spades };
