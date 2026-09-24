@@ -1,0 +1,38 @@
+stateDiagram-v2
+    [*] --> WaitingForBets
+
+    WaitingForBets --> Dealing : Place Bet
+
+    Dealing --> RoundOver : Natural Blackjack (21)
+    Dealing --> PlayerTurn : Normal Deal
+
+    state PlayerTurn {
+        [*] --> Decision
+        Decision --> Decision : Hit (if <= 21)
+        Decision --> Decision : Split
+        Decision --> NextHand : Double Down
+        Decision --> NextHand : Stand / Bust (>21)
+        
+        NextHand --> Decision : Play Next Split Hand
+        NextHand --> [*] : All Player Hands Done
+    }
+
+    PlayerTurn --> RoundOver : All Player Hands Busted
+    PlayerTurn --> DealerTurn : At Least 1 Hand Survives
+
+    state DealerTurn {
+        [*] --> RevealHoleCard
+        RevealHoleCard --> DealerHit : Score < 17
+        DealerHit --> DealerHit : Score < 17
+        DealerHit --> [*] : Score >= 17 or Bust
+    }
+
+    DealerTurn --> RoundOver
+
+    state RoundOver {
+        [*] --> CompareScores
+        CompareScores --> PayoutChips
+        PayoutChips --> [*]
+    }
+
+    RoundOver --> WaitingForBets : Reset for Next Round
