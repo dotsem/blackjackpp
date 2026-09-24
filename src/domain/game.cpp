@@ -28,7 +28,7 @@ void Game::deal_dealer_cards() {
     dealer_.reveal_hole_card();
     events_.emplace_back(HoleCardRevealedEvent{dealer_.hand().cards()[1].card});
 
-    while (dealer_.hand().is_soft() && dealer_.hand().value() < 17) {
+    while (dealer_.hand().is_soft() || dealer_.hand().value() < 17) {
         deal_card_to_dealer();
     }
 
@@ -45,7 +45,7 @@ void Game::hit() {
     deal_card_to_player();
 
     if (player_.active_hand().hand.is_busted()) {
-        player_.set_hand_outcome(HandOutcome::Busted);
+        player_.set_outcome_for_current_hand(HandOutcome::Busted);
         player_.advance_to_next_hand();
         events_.emplace_back(HandBustedEvent{});
     }
@@ -77,7 +77,7 @@ void Game::double_down() {
     player_.add_card(*card_opt);
 
     if (player_.active_hand().hand.is_busted()) {
-        player_.set_hand_outcome(HandOutcome::Busted);
+        player_.set_outcome_for_current_hand(HandOutcome::Busted);
     }
     player_.stand(); // After doubling down, the player automatically stands
 
@@ -99,7 +99,7 @@ void Game::split() {
 void Game::evaluate_hand(int hand_index) {
     const auto& player_hand = player_.hands()[hand_index].hand;
     if (player_hand.is_busted()) {
-        player_.set_hand_outcome(HandOutcome::Busted);
+        player_.set_outcome_for_hand(HandOutcome::Busted, hand_index);
         return;
     }
 
@@ -112,17 +112,17 @@ void Game::evaluate_hand(int hand_index) {
     bool is_natural_bj = player_hand.is_blackjack() && !player_.hands()[hand_index].is_from_split;
 
     if (is_natural_bj && !dealer_hand.is_blackjack()) {
-        player_.set_hand_outcome(HandOutcome::Blackjack);
+        player_.set_outcome_for_hand(HandOutcome::Blackjack, hand_index);
     } else if (!player_hand.is_blackjack() && dealer_hand.is_blackjack()) {
-        player_.set_hand_outcome(HandOutcome::Lost);
+        player_.set_outcome_for_hand(HandOutcome::Lost, hand_index);
     } else if (dealer_hand.is_busted()) {
-        player_.set_hand_outcome(HandOutcome::Won);
+        player_.set_outcome_for_hand(HandOutcome::Won, hand_index);
     } else if (player_hand.value() > dealer_hand.value()) {
-        player_.set_hand_outcome(HandOutcome::Won);
+        player_.set_outcome_for_hand(HandOutcome::Won, hand_index);
     } else if (player_hand.value() < dealer_hand.value()) {
-        player_.set_hand_outcome(HandOutcome::Lost);
+        player_.set_outcome_for_hand(HandOutcome::Lost, hand_index);
     } else {
-        player_.set_hand_outcome(HandOutcome::Push);
+        player_.set_outcome_for_hand(HandOutcome::Push, hand_index);
     }
 }
 

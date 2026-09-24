@@ -86,7 +86,10 @@ public:
     void stand() { current_hand().stand = true; }
 
     [[nodiscard]] HandOutcome hand_outcome() const noexcept { return current_hand().outcome; }
-    void set_hand_outcome(HandOutcome outcome) { current_hand().outcome = outcome; }
+    void set_outcome_for_hand(HandOutcome outcome, int hand_index) {
+        hands_[hand_index].outcome = outcome;
+    }
+    void set_outcome_for_current_hand(HandOutcome outcome) { current_hand().outcome = outcome; }
 
     [[nodiscard]] size_t hand_count() const noexcept { return hands_.size(); }
     [[nodiscard]] size_t active_hand_index() const noexcept { return active_hand_index_; }
