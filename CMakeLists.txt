@@ -8,7 +8,7 @@ FetchContent_Declare(SDL3
 )
 FetchContent_MakeAvailable(SDL3)
 
-add_executable(blackjack++ main.cpp)
+add_executable(blackjack++ main.cpp src/domain/game.cpp)
 
 target_include_directories(blackjack++ PRIVATE src)
 target_link_libraries(blackjack++ PRIVATE SDL3::SDL3)

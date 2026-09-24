@@ -33,7 +33,7 @@ public:
         return dealt_card.card;
     }
 
-    [[nodiscard]] int total(bool only_visible = false) const noexcept {
+    [[nodiscard]] int value(bool only_visible = false) const noexcept {
         int total = 0;
         int ace_count = 0;
         for (const auto& entry : cards_) {
@@ -52,7 +52,7 @@ public:
         return total;
     };
 
-    [[nodiscard]] bool is_blackjack() const noexcept { return cards_.size() == 2 && total() == 21; }
+    [[nodiscard]] bool is_blackjack() const noexcept { return cards_.size() == 2 && value() == 21; }
 
     [[nodiscard]] bool is_soft() const noexcept {
         int total = 0;
@@ -92,7 +92,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool is_busted() const noexcept { return total() > 21; }
+    [[nodiscard]] bool is_busted() const noexcept { return value() > 21; }
 
 private:
     std::vector<DealtCard> cards_;
