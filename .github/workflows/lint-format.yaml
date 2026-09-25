@@ -37,7 +37,6 @@ jobs:
       - name: Install Toolchain & Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-format clang-tidy cmake ninja-build \
           sudo apt-get install -y clang clang-format clang-tidy cmake ninja-build \
             libx11-dev libxext-dev libxrandr-dev libxinerama-dev \
             libxcursor-dev libxi-dev libxss-dev libwayland-dev \
@@ -45,12 +44,10 @@ jobs:
 
       - name: Check Formatting
         run: |
-          git ls-files '*.cpp' '*.hpp' | xargs clang-format --dry-run --Werror
           git ls-files -z '*.cpp' '*.hpp' | xargs -0 -r clang-format --dry-run --Werror
 
       - name: Generate Compilation Database
         run: |
-          cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1
           cmake -B build -G Ninja \
             -DCMAKE_CXX_COMPILER=clang++ \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -58,5 +55,4 @@ jobs:
 
       - name: Run Clang-Tidy
         run: |
-          git ls-files '*.cpp' | grep -v '_test.cpp' | xargs clang-tidy -p build --warnings-as-errors='*'
           git ls-files -z '*.cpp' | grep -zv '_test.cpp' | xargs -0 -r clang-tidy -p build --warnings-as-errors='*'
