@@ -13,5 +13,5 @@ Checks: >
   -cppcoreguidelines-pro-type-vararg
 
 WarningsAsErrors: ''
-HeaderFilterRegex: '^((?!_deps).)*src/.*'
+HeaderFilterRegex: '^(?!.*(_deps|_test)).*src/.*'
 FormatStyle: file
