@@ -13,3 +13,10 @@ setup:
 test filter="*":
     cmake --build build --target unit_tests && ./build/unit_tests --gtest_filter={{filter}}
 
+fmt:
+    git ls-files '*.cpp' '*.hpp' | xargs clang-format -i
+
+lint:
+    git ls-files '*.cpp' | grep -v '_test.cpp' | xargs clang-tidy -p build
+lint-fix:
+    git ls-files '*.cpp' | grep -v '_test.cpp' | xargs clang-tidy -p build --fix --fix-errors
