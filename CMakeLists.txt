@@ -28,7 +28,7 @@ add_executable(unit_tests
     src/domain/game.cpp
 
     src/domain/card_test.cpp
-    # src/domain/deck_test.cpp
+    src/domain/deck_test.cpp
     # src/domain/hand_test.cpp
     # src/domain/player_test.cpp
     # src/domain/dealer_test.cpp
