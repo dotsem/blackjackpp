@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: true
+  commands:
+    clang-format:
+      glob: "*.{cpp,hpp}"
+      run: clang-format -i {staged_files}
+      stage_fixed: true
+
+    clang-tidy:
+      glob: "*.cpp"
+      exclude: "*_test.cpp"
+      run: clang-tidy -p build {staged_files}
