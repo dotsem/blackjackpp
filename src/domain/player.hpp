@@ -17,7 +17,7 @@ struct PlayerHand {
 
 class Player {
 public:
-    Player() { hands_.reserve(4); }
+    Player(int chips = 1000) : chips_(chips) { hands_.reserve(4); }
 
     void clear_hands() {
         hands_.clear();
@@ -72,9 +72,6 @@ public:
         chips_ -= h.bet;
         h.bet *= 2;
 
-        // TODO: here the user should be prompted to draw one more card and then the hand is
-        // automatically settled
-
         return true;
     }
 
@@ -82,7 +79,7 @@ public:
     [[nodiscard]] PlayerHand& active_hand() noexcept { return current_hand(); }
     [[nodiscard]] const std::vector<PlayerHand>& hands() const noexcept { return hands_; }
 
-    [[nodiscard]] bool active_hand_stand() const noexcept { return current_hand().stand; }
+    [[nodiscard]] bool active_hand_stands() const noexcept { return current_hand().stand; }
     void stand() { current_hand().stand = true; }
 
     [[nodiscard]] HandOutcome hand_outcome() const noexcept { return current_hand().outcome; }
@@ -99,7 +96,7 @@ public:
         }
     }
 
-    [[nodiscard]] bool all_hands_stand() const noexcept {
+    [[nodiscard]] bool all_hands_stands() const noexcept {
         for (const auto& hand : hands_) {
             if (!hand.stand) {
                 return false;
@@ -124,7 +121,7 @@ public:
 private:
     std::vector<PlayerHand> hands_{PlayerHand{}};
     size_t active_hand_index_{0};
-    int chips_{1000};
+    int chips_;
 
     [[nodiscard]] PlayerHand& current_hand() noexcept { return hands_[active_hand_index_]; }
     [[nodiscard]] const PlayerHand& current_hand() const noexcept {
