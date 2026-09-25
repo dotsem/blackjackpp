@@ -1,5 +1,5 @@
-#include "domain/event.hpp"
 #include "game.hpp"
+#include "domain/event.hpp"
 #include "hand.hpp"
 #include <stdexcept>
 
