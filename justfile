@@ -8,7 +8,12 @@ run:
     just build && ./build/blackjack++
 
 setup:
-    cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && ln -s build/compile_commands.json . 2>/dev/null
+    cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror"\
+            && ln -s build/compile_commands.json . 2>/dev/null
 
 test filter="*":
     cmake --build build --target unit_tests && ./build/unit_tests --gtest_filter={{filter}}
