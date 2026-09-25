@@ -1,0 +1,6 @@
+If:
+  PathMatch: .*_test\.(cpp|hpp)
+Diagnostics:
+  ClangTidy:
+    Remove:
+      - "*"
