@@ -1,6 +1,5 @@
 #include "domain/card.hpp"
 #include "domain/player.hpp"
-
 #include <gtest/gtest.h>
 
 using namespace domain;
@@ -14,7 +13,7 @@ TEST(PlayerTest, constructor_initializes_with_empty_hand) {
 
 TEST(PlayerTest, add_card_to_current_hand_adds_card_to_active_hand) {
     Player player;
-    Card card{Suit::Hearts, Rank::Ace};
+    Card card{ Suit::Hearts, Rank::Ace };
     player.add_card_to_current_hand(card);
 
     EXPECT_EQ(player.active_hand().hand.cards().size(), 1);
@@ -23,7 +22,7 @@ TEST(PlayerTest, add_card_to_current_hand_adds_card_to_active_hand) {
 
 TEST(PlayerTest, clear_hands_resets_hands_and_active_hand_index) {
     Player player;
-    Card card{Suit::Hearts, Rank::Ace};
+    Card card{ Suit::Hearts, Rank::Ace };
     player.add_card_to_current_hand(card);
     player.clear_hands();
 
@@ -34,8 +33,8 @@ TEST(PlayerTest, clear_hands_resets_hands_and_active_hand_index) {
 
 TEST(PlayerTest, can_split_returns_true_for_valid_split) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Eight};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Eight };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
@@ -45,8 +44,8 @@ TEST(PlayerTest, can_split_returns_true_for_valid_split) {
 
 TEST(PlayerTest, can_split_returns_false_for_invalid_split) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Hearts, Rank::Nine};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Hearts, Rank::Nine };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
@@ -56,8 +55,8 @@ TEST(PlayerTest, can_split_returns_false_for_invalid_split) {
 
 TEST(PlayerTest, split_creates_new_hand_and_moves_card) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Eight};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Eight };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
@@ -72,8 +71,8 @@ TEST(PlayerTest, split_creates_new_hand_and_moves_card) {
 
 TEST(PlayerTest, invalid_split_does_not_change_hands) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Nine};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Nine };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
@@ -85,8 +84,8 @@ TEST(PlayerTest, invalid_split_does_not_change_hands) {
 
 TEST(PlayerTest, can_double_down_returns_true_for_valid_double_down) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Three};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Three };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
@@ -96,7 +95,7 @@ TEST(PlayerTest, can_double_down_returns_true_for_valid_double_down) {
 
 TEST(PlayerTest, can_double_down_returns_false_for_invalid_double_down) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
+    Card card1{ Suit::Hearts, Rank::Eight };
     player.add_card_to_current_hand(card1);
     player.active_hand().bet = 100;
 
@@ -105,8 +104,8 @@ TEST(PlayerTest, can_double_down_returns_false_for_invalid_double_down) {
 
 TEST(PlayerTest, can_double_down_returns_false_for_insufficient_chips) {
     Player player = Player(100);
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Three};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Three };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.remove_chips(70);
@@ -117,8 +116,8 @@ TEST(PlayerTest, can_double_down_returns_false_for_insufficient_chips) {
 
 TEST(PlayerTest, double_down_doubles_the_bet) {
     Player player(200);
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Three};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Three };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.remove_chips(100);
@@ -132,7 +131,7 @@ TEST(PlayerTest, double_down_doubles_the_bet) {
 
 TEST(PlayerTest, double_down_fails_for_invalid_conditions) {
     Player player = Player(100);
-    Card card1{Suit::Hearts, Rank::Eight};
+    Card card1{ Suit::Hearts, Rank::Eight };
     player.add_card_to_current_hand(card1);
     player.remove_chips(70);
     player.active_hand().bet = 70;
@@ -153,8 +152,8 @@ TEST(PlayerTest, stand_sets_active_hand_stand_to_true) {
 
 TEST(PlayerTest, advance_to_next_hand_does_not_wrap_around) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Eight};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Eight };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.split();

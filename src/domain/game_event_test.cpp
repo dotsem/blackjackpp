@@ -1,6 +1,5 @@
 #include "domain/game.hpp"
 #include "game_test.hpp"
-
 #include "gtest/gtest.h"
 
 using namespace domain;

@@ -10,7 +10,6 @@
 #include "src/SDL_fur_coat/renderer.hpp"
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
 #include "src/SDL_fur_coat/window.hpp"
-
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -24,7 +23,9 @@ struct AppState {
     SDL_FPoint points[500];
 
     AppState(std::string_view title, int w, int h)
-        : window(title, w, h, SDL_WINDOW_RESIZABLE), renderer(window.get()) {}
+        : window(title, w, h, SDL_WINDOW_RESIZABLE)
+        , renderer(window.get()) {
+    }
 };
 
 /* This function runs once at startup. */
@@ -39,7 +40,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
     try {
         auto* app = new AppState("examples/renderer/primitives", 640, 480);
         SDL_SetRenderLogicalPresentation(app->renderer.get(), 640, 480,
-                                         SDL_LOGICAL_PRESENTATION_LETTERBOX);
+            SDL_LOGICAL_PRESENTATION_LETTERBOX);
         for (int i = 0; i < SDL_arraysize(app->points); i++) {
             app->points[i].x = (SDL_randf() * 440.0f) + 100.0f;
             app->points[i].y = (SDL_randf() * 280.0f) + 100.0f;

@@ -1,5 +1,4 @@
 #include "domain/deck.hpp"
-
 #include <gtest/gtest.h>
 
 using namespace domain;

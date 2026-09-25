@@ -1,11 +1,9 @@
 #include "domain/game_test.hpp"
-
 #include "domain/card.hpp"
 #include "domain/dealer.hpp"
 #include "domain/deck.hpp"
 #include "domain/game.hpp"
 #include "domain/player.hpp"
-
 #include <gtest/gtest.h>
 
 using namespace domain;
@@ -177,8 +175,8 @@ TEST(GameState, double_down_throws_if_cannot_double_down) {
 
 TEST(GameState, split_splits_hand) {
     Player player;
-    Card card1{Suit::Hearts, Rank::Eight};
-    Card card2{Suit::Diamonds, Rank::Eight};
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Eight };
     player.add_card_to_current_hand(card1);
     player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
@@ -231,13 +229,13 @@ TEST(GameState, evaluate_hand_sets_outcome_for_busted_hand) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_winning_hand) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::Queen});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ten });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::Queen });
     player.active_hand().bet = 100;
 
     Dealer dealer;
-    dealer.add_upcard({Suit::Spades, Rank::Ten});
-    dealer.add_upcard({Suit::Clubs, Rank::Eight});
+    dealer.add_upcard({ Suit::Spades, Rank::Ten });
+    dealer.add_upcard({ Suit::Clubs, Rank::Eight });
 
     Game game(player, dealer, Deck{});
     game.set_state(GameState::DealerTurn);
@@ -249,13 +247,13 @@ TEST(GameState, evaluate_hand_sets_outcome_for_winning_hand) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_losing_hand) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::Eight});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ten });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::Eight });
     player.active_hand().bet = 100;
 
     Dealer dealer;
-    dealer.add_upcard({Suit::Spades, Rank::Ten});
-    dealer.add_upcard({Suit::Clubs, Rank::Queen});
+    dealer.add_upcard({ Suit::Spades, Rank::Ten });
+    dealer.add_upcard({ Suit::Clubs, Rank::Queen });
 
     Game game(player, dealer, Deck{});
     game.set_state(GameState::DealerTurn);
@@ -267,13 +265,13 @@ TEST(GameState, evaluate_hand_sets_outcome_for_losing_hand) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_push) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::Eight});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ten });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::Eight });
     player.active_hand().bet = 100;
 
     Dealer dealer;
-    dealer.add_upcard({Suit::Spades, Rank::Ten});
-    dealer.add_upcard({Suit::Clubs, Rank::Eight});
+    dealer.add_upcard({ Suit::Spades, Rank::Ten });
+    dealer.add_upcard({ Suit::Clubs, Rank::Eight });
 
     Game game(player, dealer, Deck{});
     game.set_state(GameState::DealerTurn);
@@ -285,13 +283,13 @@ TEST(GameState, evaluate_hand_sets_outcome_for_push) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_blackjack) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Ace});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::King});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ace });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::King });
     player.active_hand().bet = 100;
 
     Dealer dealer;
-    dealer.add_upcard({Suit::Spades, Rank::Ten});
-    dealer.add_upcard({Suit::Clubs, Rank::Eight});
+    dealer.add_upcard({ Suit::Spades, Rank::Ten });
+    dealer.add_upcard({ Suit::Clubs, Rank::Eight });
 
     Game game(player, dealer, Deck{});
     game.set_state(GameState::DealerTurn);
@@ -303,13 +301,13 @@ TEST(GameState, evaluate_hand_sets_outcome_for_blackjack) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_blackjack_push) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Ace});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::King});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ace });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::King });
     player.active_hand().bet = 100;
 
     Dealer dealer;
-    dealer.add_upcard({Suit::Spades, Rank::Ace});
-    dealer.add_upcard({Suit::Clubs, Rank::King});
+    dealer.add_upcard({ Suit::Spades, Rank::Ace });
+    dealer.add_upcard({ Suit::Clubs, Rank::King });
 
     Game game(player, dealer, Deck{});
     game.set_state(GameState::DealerTurn);
@@ -321,8 +319,8 @@ TEST(GameState, evaluate_hand_sets_outcome_for_blackjack_push) {
 
 TEST(GameState, evaluate_hand_does_nothing_if_not_in_dealer_turn_or_round_over) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Two});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::Three});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Two });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::Three });
     player.active_hand().bet = 100;
     Game game(player, Dealer{}, Deck{});
     game.set_state(GameState::PlayerTurn);
@@ -332,13 +330,13 @@ TEST(GameState, evaluate_hand_does_nothing_if_not_in_dealer_turn_or_round_over) 
 
 TEST(GameState, finish_round_calculates_total_bet_and_payout) {
     Player player;
-    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
-    player.add_card_to_current_hand({Suit::Diamonds, Rank::Queen});
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ten });
+    player.add_card_to_current_hand({ Suit::Diamonds, Rank::Queen });
     player.active_hand().bet = 100;
 
     Dealer dealer;
-    dealer.add_upcard({Suit::Spades, Rank::Ten});
-    dealer.add_upcard({Suit::Clubs, Rank::Eight});
+    dealer.add_upcard({ Suit::Spades, Rank::Ten });
+    dealer.add_upcard({ Suit::Clubs, Rank::Eight });
 
     Game game(player, dealer, Deck{});
     game.set_state(GameState::DealerTurn);
