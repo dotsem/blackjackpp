@@ -22,6 +22,8 @@ class Card {
 public:
     constexpr Card(Suit suit, Rank rank) noexcept : suit_(suit), rank_(rank) {}
 
+    bool operator==(const Card&) const = default;
+
     [[nodiscard]] constexpr Suit suit() const noexcept { return suit_; }
     [[nodiscard]] constexpr Rank rank() const noexcept { return rank_; }
 
