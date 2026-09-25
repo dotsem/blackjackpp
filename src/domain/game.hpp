@@ -84,7 +84,7 @@ namespace domain {
         void stand();
         void double_down();
         void split();
-        void evaluate_hand(int hand_index);
+        void evaluate_hand(size_t hand_index);
         RoundSummary finish_round();
 
         void place_bet(int amount) {
