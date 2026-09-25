@@ -1,13 +1,20 @@
 #pragma once
 
+#include <cstdint>
+
+namespace {
+    const int AceValue = 11;
+    const int FaceCardValue = 10;
+}
+
 namespace domain {
-    enum class Suit {
+    enum class Suit : std::uint8_t {
         Clubs,
         Diamonds,
         Hearts,
         Spades
     };
-    enum class Rank {
+    enum class Rank : std::uint8_t {
         Two = 2,
         Three = 3,
         Four = 4,
@@ -42,10 +49,10 @@ namespace domain {
 
         [[nodiscard]] constexpr int blackjack_value() const noexcept {
             if (rank_ >= Rank::Jack && rank_ <= Rank::King) {
-                return 10;
+                return FaceCardValue;
             }
             if (rank_ == Rank::Ace) {
-                return 11; // hand evaluator will handle the case where Ace can be 1 or 11
+                return AceValue; // hand evaluator will handle the case where Ace can be 1 or 11
             }
             return static_cast<int>(rank_);
         }

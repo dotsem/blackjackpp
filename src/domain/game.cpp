@@ -1,7 +1,12 @@
-#include "game.hpp"
 #include "domain/event.hpp"
+#include "game.hpp"
 #include "hand.hpp"
 #include <stdexcept>
+
+namespace {
+    constexpr int DealerStandThreshold = 17;
+    constexpr double BlackjackPayoutMultiplier = 2.5;
+}
 
 namespace domain {
 
@@ -30,12 +35,12 @@ namespace domain {
         dealer_.reveal_hole_card();
         events_.emplace_back(HoleCardRevealedEvent{ dealer_.hand().cards()[1].card });
 
-        while ((dealer_.hand().is_soft() && dealer_.hand().value() == 17) ||
-               dealer_.hand().value() < 17) {
+        while ((dealer_.hand().is_soft() && dealer_.hand().value() == DealerStandThreshold) ||
+               dealer_.hand().value() < DealerStandThreshold) {
             deal_card_to_dealer();
         }
 
-        for (size_t i = 0; i < player_.hand_count(); ++i) {
+        for (int i = 0; i < player_.hand_count(); ++i) {
             evaluate_hand(i);
         }
     }
@@ -120,14 +125,10 @@ namespace domain {
 
         if (is_natural_bj && !dealer_hand.is_blackjack()) {
             player_.set_outcome_for_hand(HandOutcome::Blackjack, hand_index);
-        } else if (!player_hand.is_blackjack() && dealer_hand.is_blackjack()) {
+        } else if ((player_hand.value() < dealer_hand.value()) || (!player_hand.is_blackjack() && dealer_hand.is_blackjack())) {
             player_.set_outcome_for_hand(HandOutcome::Lost, hand_index);
-        } else if (dealer_hand.is_busted()) {
+        } else if (dealer_hand.is_busted() || (player_hand.value() > dealer_hand.value())) {
             player_.set_outcome_for_hand(HandOutcome::Won, hand_index);
-        } else if (player_hand.value() > dealer_hand.value()) {
-            player_.set_outcome_for_hand(HandOutcome::Won, hand_index);
-        } else if (player_hand.value() < dealer_hand.value()) {
-            player_.set_outcome_for_hand(HandOutcome::Lost, hand_index);
         } else {
             player_.set_outcome_for_hand(HandOutcome::Push, hand_index);
         }
@@ -156,7 +157,7 @@ namespace domain {
                     total_payout += hand.bet * 2;
                     break;
                 case HandOutcome::Blackjack:
-                    total_payout += static_cast<int>(hand.bet * 2.5);
+                    total_payout += static_cast<int>(hand.bet * BlackjackPayoutMultiplier);
                     break;
                 case HandOutcome::Push:
                     total_payout += hand.bet;

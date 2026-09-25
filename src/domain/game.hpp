@@ -8,7 +8,7 @@
 
 namespace domain {
 
-    enum class GameState {
+    enum class GameState : std::uint8_t {
         WaitingForBets,
         Dealing,
         PlayerTurn,
@@ -16,7 +16,7 @@ namespace domain {
         RoundOver
     };
 
-    enum class GameResult {
+    enum class GameResult : std::uint8_t {
         PlayerBust,
         DealerBust,
         PlayerBlackjack,
