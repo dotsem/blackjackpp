@@ -4,7 +4,7 @@ CompileFlags:
     - "-fmodules-ts"
     - "-fmodule-mapper=*"
     - "-fdeps-format=*"
-
+  CompilationDatabase: build/
 
 If:
   PathMatch: .*_test\.(cpp|hpp)
