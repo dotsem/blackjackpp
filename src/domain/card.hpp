@@ -9,14 +9,14 @@ namespace domain {
     };
     enum class Rank {
         Two = 2,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine,
-        Ten,
+        Three = 3,
+        Four = 4,
+        Five = 5,
+        Six = 6,
+        Seven = 7,
+        Eight = 8,
+        Nine = 9,
+        Ten = 10,
         Jack = 11,
         Queen = 12,
         King = 13,
@@ -41,10 +41,12 @@ namespace domain {
         }
 
         [[nodiscard]] constexpr int blackjack_value() const noexcept {
-            if (rank_ >= Rank::Jack && rank_ <= Rank::King)
+            if (rank_ >= Rank::Jack && rank_ <= Rank::King) {
                 return 10;
-            if (rank_ == Rank::Ace)
+            }
+            if (rank_ == Rank::Ace) {
                 return 11; // hand evaluator will handle the case where Ace can be 1 or 11
+            }
             return static_cast<int>(rank_);
         }
 

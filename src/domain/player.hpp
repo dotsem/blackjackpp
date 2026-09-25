@@ -46,9 +46,10 @@ namespace domain {
             hands_[hand_index].hand.add_card(card);
         }
 
-        bool can_split() const noexcept {
-            if (active_hand_index_ >= hands_.size())
+        [[nodiscard]] bool can_split() const noexcept {
+            if (active_hand_index_ >= hands_.size()) {
                 return false;
+            }
             const auto& h = current_hand();
             return h.hand.cards().size() == 2 &&
                    h.hand.cards()[0].card.blackjack_value() ==
@@ -57,8 +58,9 @@ namespace domain {
         }
 
         void split() {
-            if (!can_split())
+            if (!can_split()) {
                 return;
+            }
 
             int split_bet = current_hand().bet;
             Card card_to_move = current_hand().hand.pop();
@@ -70,20 +72,23 @@ namespace domain {
             hands_.push_back(new_hand);
         }
 
-        bool can_double_down() const noexcept {
-            if (active_hand_index_ >= hands_.size())
+        [[nodiscard]] bool can_double_down() const noexcept {
+            if (active_hand_index_ >= hands_.size()) {
                 return false;
+            }
 
             const auto& h = current_hand();
-            if (h.hand.size() != 2)
+            if (h.hand.size() != 2) {
                 return false;
+            }
 
             return chips_ >= h.bet;
         }
 
         bool double_down() {
-            if (!can_double_down())
+            if (!can_double_down()) {
                 return false;
+            }
 
             auto& h = current_hand();
 

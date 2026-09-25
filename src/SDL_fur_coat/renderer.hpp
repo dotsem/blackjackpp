@@ -9,8 +9,9 @@ namespace sdl {
     class Renderer {
         struct Deleter {
             void operator()(SDL_Renderer* r) const noexcept {
-                if (r)
+                if (r != nullptr) {
                     SDL_DestroyRenderer(r);
+                }
             }
         };
 
@@ -19,8 +20,9 @@ namespace sdl {
     public:
         Renderer(SDL_Window* window, const char* name = nullptr)
             : handle_(SDL_CreateRenderer(window, name)) {
-            if (!handle_)
+            if (!handle_) {
                 throw std::runtime_error(SDL_GetError());
+            }
         }
 
         [[nodiscard]] SDL_Renderer* get() const noexcept {

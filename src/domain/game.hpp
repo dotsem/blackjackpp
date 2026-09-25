@@ -45,7 +45,7 @@ namespace domain {
             , deck_(std::move(deck)) {
         }
 
-        [[nodiscard]] const int total_bet() const noexcept {
+        [[nodiscard]] int total_bet() const noexcept {
             int total = 0;
             for (const auto& hand : player_.hands()) {
                 total += hand.bet;
@@ -129,7 +129,7 @@ namespace domain {
             } else {
                 dealer_.add_hole_card(*card_opt);
             }
-            events_.emplace_back(CardDealtEvent{ *card_opt, true, 0, is_face_up });
+            events_.emplace_back(CardDealtEvent{ .card = *card_opt, .is_dealer = true, .hand_index = 0, .is_face_up = is_face_up });
         }
 
         void deal_card_to_player_hand(size_t hand_index) {
@@ -138,7 +138,7 @@ namespace domain {
                 throw std::runtime_error("Deck is empty. Cannot draw a card.");
             }
             player_.add_card_to_hand(*card_opt, hand_index);
-            events_.emplace_back(CardDealtEvent{ *card_opt, false, hand_index, true });
+            events_.emplace_back(CardDealtEvent{ .card = *card_opt, .is_dealer = false, .hand_index = hand_index, .is_face_up = true });
         }
 
         void deal_card_to_player_current_hand() {

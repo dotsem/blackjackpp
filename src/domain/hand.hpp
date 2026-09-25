@@ -14,12 +14,13 @@ namespace domain {
     class Hand {
     public:
         void add_card(Card card, bool is_face_up = true) {
-            cards_.push_back({ card, is_face_up });
+            cards_.push_back({ .card = card, .is_face_up = is_face_up });
         }
 
         void reveal_all() noexcept {
-            for (auto& c : cards_)
+            for (auto& c : cards_) {
                 c.is_face_up = true;
+            }
         }
 
         void clear() {
@@ -66,11 +67,13 @@ namespace domain {
             int total = 0;
             int ace_count = 0;
             for (const auto& entry : cards_) {
-                if (!entry.is_face_up)
+                if (!entry.is_face_up) {
                     continue;
+                }
                 total += entry.card.blackjack_value();
-                if (entry.card.rank() == Rank::Ace)
+                if (entry.card.rank() == Rank::Ace) {
                     ++ace_count;
+                }
             }
             while (total > 21 && ace_count > 0) {
                 total -= 10;

@@ -14,13 +14,13 @@
 #include <SDL3/SDL_main.h>
 
 /* We will use this renderer to draw into this window every frame. */
-static SDL_Window* window = NULL;
-static SDL_Renderer* renderer = NULL;
+static SDL_Window* window = nullptr;
+static SDL_Renderer* renderer = nullptr;
 
 struct AppState {
     sdl::Window window;
     sdl::Renderer renderer;
-    SDL_FPoint points[500];
+    SDL_FPoint points[500]{};
 
     AppState(std::string_view title, int w, int h)
         : window(title, w, h, SDL_WINDOW_RESIZABLE)
@@ -41,9 +41,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int argc, char* argv[]) {
         auto* app = new AppState("examples/renderer/primitives", 640, 480);
         SDL_SetRenderLogicalPresentation(app->renderer.get(), 640, 480,
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
-        for (int i = 0; i < SDL_arraysize(app->points); i++) {
-            app->points[i].x = (SDL_randf() * 440.0f) + 100.0f;
-            app->points[i].y = (SDL_randf() * 280.0f) + 100.0f;
+        for (auto& point : app->points) {
+            point.x = (SDL_randf() * 440.0F) + 100.0F;
+            point.y = (SDL_randf() * 280.0F) + 100.0F;
         }
         *appstate = app;
         return SDL_APP_CONTINUE;
