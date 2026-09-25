@@ -34,7 +34,7 @@ namespace domain {
         }
 
         dealer_.reveal_hole_card();
-        events_.emplace_back(HoleCardRevealedEvent{ dealer_.hand().cards()[1].card });
+        events_.emplace_back(HoleCardRevealedEvent{ dealer_.hand().cards().at(1).card });
 
         while ((dealer_.hand().is_soft() && dealer_.hand().value() == DealerStandThreshold) ||
                dealer_.hand().value() < DealerStandThreshold) {
@@ -110,7 +110,7 @@ namespace domain {
     }
 
     void Game::evaluate_hand(size_t hand_index) {
-        const auto& player_hand = player_.hands()[hand_index].hand;
+        const auto& player_hand = player_.hands().at(hand_index).hand;
         if (player_hand.is_busted()) {
             player_.set_outcome_for_hand(HandOutcome::Busted, hand_index);
             return;
@@ -122,7 +122,7 @@ namespace domain {
 
         const auto& dealer_hand = dealer_.hand();
 
-        bool is_natural_bj = player_hand.is_blackjack() && !player_.hands()[hand_index].is_from_split;
+        bool is_natural_bj = player_hand.is_blackjack() && !player_.hands().at(hand_index).is_from_split;
 
         if (is_natural_bj && !dealer_hand.is_blackjack()) {
             player_.set_outcome_for_hand(HandOutcome::Blackjack, hand_index);

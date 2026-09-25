@@ -21,6 +21,7 @@ FetchContent_MakeAvailable(SDL3 googletest)
 add_executable(blackjack++ main.cpp src/domain/game.cpp)
 
 target_include_directories(blackjack++ PRIVATE src)
+target_compile_definitions(blackjack++ PRIVATE SDL_MAIN_USE_CALLBACKS=1)
 target_link_libraries(blackjack++ PRIVATE SDL3::SDL3)
 
 enable_testing()

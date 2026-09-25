@@ -9,7 +9,6 @@
 
 #include "SDL3/SDL_init.h"
 #include "SDL_fur_coat/renderer.hpp"
-#define SDL_MAIN_USE_CALLBACKS 1
 #include "SDL_fur_coat/window.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -26,7 +25,7 @@ struct AppState {
     }
 };
 
-SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
+SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     SDL_SetAppMetadata("Example Renderer Primitives", "1.0", "com.example.renderer-primitives");
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
