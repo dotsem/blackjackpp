@@ -37,8 +37,8 @@ TEST(DeckTest, draw_specific_card_returns_nullopt_if_card_not_found) {
 
 TEST(DeckTest, reset_restores_deck_to_52_cards) {
     Deck deck;
-    deck.draw_card();
-    deck.draw_card();
+    std::ignore = deck.draw_card();
+    std::ignore = deck.draw_card();
     EXPECT_EQ(deck.cards().size(), 50);
     deck.reset();
     EXPECT_EQ(deck.cards().size(), 52);

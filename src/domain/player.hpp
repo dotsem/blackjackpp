@@ -1,10 +1,16 @@
 #pragma once
 #include "domain/hand.hpp"
+#include <algorithm>
+#include <cstddef>
 #include <vector>
+
+namespace {
+    constexpr int InitialChips = 1000;
+}
 
 namespace domain {
 
-    enum class HandOutcome {
+    enum class HandOutcome : std::uint8_t {
         Pending,
         Busted,
         Won,
@@ -23,7 +29,7 @@ namespace domain {
 
     class Player {
     public:
-        Player(int chips = 1000)
+        Player(int chips = InitialChips)
             : chips_(chips) {
             hands_.reserve(4);
         }
@@ -122,7 +128,7 @@ namespace domain {
             return current_hand().outcome;
         }
 
-        void set_outcome_for_hand(HandOutcome outcome, int hand_index) {
+        void set_outcome_for_hand(HandOutcome outcome, size_t hand_index) {
             hands_[hand_index].outcome = outcome;
         }
 
@@ -145,21 +151,15 @@ namespace domain {
         }
 
         [[nodiscard]] bool all_hands_stands() const noexcept {
-            for (const auto& hand : hands_) {
-                if (!hand.stand) {
-                    return false;
-                }
-            }
-            return true;
+            return std::ranges::all_of(hands_, [](const PlayerHand& hand) {
+                return hand.stand;
+            });
         }
 
         [[nodiscard]] bool all_hands_settled() const noexcept {
-            for (const auto& hand : hands_) {
-                if (hand.outcome == HandOutcome::Pending) {
-                    return false;
-                }
-            }
-            return true;
+            return std::ranges::all_of(hands_, [](const PlayerHand& hand) {
+                return hand.outcome != HandOutcome::Pending;
+            });
         }
 
         [[nodiscard]] int chips() const noexcept {

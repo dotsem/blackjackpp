@@ -1,6 +1,7 @@
-#include "domain/event.hpp"
 #include "game.hpp"
+#include "domain/event.hpp"
 #include "hand.hpp"
+#include <cstddef>
 #include <stdexcept>
 
 namespace {
@@ -33,14 +34,14 @@ namespace domain {
         }
 
         dealer_.reveal_hole_card();
-        events_.emplace_back(HoleCardRevealedEvent{ dealer_.hand().cards()[1].card });
+        events_.emplace_back(HoleCardRevealedEvent{ dealer_.hand().cards().at(1).card });
 
         while ((dealer_.hand().is_soft() && dealer_.hand().value() == DealerStandThreshold) ||
                dealer_.hand().value() < DealerStandThreshold) {
             deal_card_to_dealer();
         }
 
-        for (int i = 0; i < player_.hand_count(); ++i) {
+        for (size_t i = 0; i < player_.hand_count(); ++i) {
             evaluate_hand(i);
         }
     }
@@ -108,8 +109,8 @@ namespace domain {
         deal_card_to_player_hand(new_hand_idx);
     }
 
-    void Game::evaluate_hand(int hand_index) {
-        const auto& player_hand = player_.hands()[hand_index].hand;
+    void Game::evaluate_hand(size_t hand_index) {
+        const auto& player_hand = player_.hands().at(hand_index).hand;
         if (player_hand.is_busted()) {
             player_.set_outcome_for_hand(HandOutcome::Busted, hand_index);
             return;
@@ -121,7 +122,7 @@ namespace domain {
 
         const auto& dealer_hand = dealer_.hand();
 
-        bool is_natural_bj = player_hand.is_blackjack() && !player_.hands()[hand_index].is_from_split;
+        bool is_natural_bj = player_hand.is_blackjack() && !player_.hands().at(hand_index).is_from_split;
 
         if (is_natural_bj && !dealer_hand.is_blackjack()) {
             player_.set_outcome_for_hand(HandOutcome::Blackjack, hand_index);

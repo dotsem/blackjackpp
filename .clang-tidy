@@ -10,7 +10,8 @@ Checks: >
   -readability-identifier-length,
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-pro-type-vararg
+  -cppcoreguidelines-pro-type-vararg,
+  -readability-magic-numbers
 
 WarningsAsErrors: ''
 HeaderFilterRegex: '^(?!.*(_deps|_test)).*src/.*'
