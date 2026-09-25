@@ -7,16 +7,18 @@
  * This code is public domain. Feel free to use it for any purpose!
  */
 
+#include "SDL3/SDL_init.h"
 #include "SDL_fur_coat/renderer.hpp"
 #define SDL_MAIN_USE_CALLBACKS 1
 #include "SDL_fur_coat/window.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <array>
 
 struct AppState {
     sdl::Window window;
     sdl::Renderer renderer;
-    SDL_FPoint points[500]{};
+    std::array<SDL_FPoint, 500> points{};
 
     AppState(std::string_view title, int w, int h)
         : window(title, w, h, SDL_WINDOW_RESIZABLE)
@@ -33,14 +35,14 @@ SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_un
     }
 
     try {
-        auto* app = new AppState("examples/renderer/primitives", 640, 480);
+        std::unique_ptr<AppState> app = std::make_unique<AppState>("examples/renderer/primitives", 640, 480);
         SDL_SetRenderLogicalPresentation(app->renderer.get(), 640, 480,
             SDL_LOGICAL_PRESENTATION_LETTERBOX);
         for (auto& point : app->points) {
             point.x = (SDL_randf() * 440.0F) + 100.0F;
             point.y = (SDL_randf() * 280.0F) + 100.0F;
         }
-        *appstate = app;
+        *appstate = app.release();
         return SDL_APP_CONTINUE;
     } catch (const std::exception& e) {
         SDL_Log("Failed initialization: %s", e.what());
@@ -71,8 +73,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
     SDL_RenderFillRect(renderer, &rect);
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderPoints(renderer, app->points, SDL_arraysize(app->points));
-
+    SDL_RenderPoints(renderer, app->points.data(), static_cast<int>(app->points.size()));
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
     rect.x += 30;
     rect.y += 30;
@@ -90,6 +91,6 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 }
 
 void SDL_AppQuit(void* appstate, [[maybe_unused]] SDL_AppResult result) {
-    delete static_cast<AppState*>(appstate);
+    const std::unique_ptr<AppState> app(static_cast<AppState*>(appstate));
     SDL_Quit();
 }
