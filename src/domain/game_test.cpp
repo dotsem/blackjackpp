@@ -6,7 +6,6 @@
 #include "domain/game.hpp"
 #include "domain/player.hpp"
 
-#include <cstdio>
 #include <gtest/gtest.h>
 
 using namespace domain;
