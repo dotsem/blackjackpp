@@ -17,7 +17,7 @@ public:
         fill_deck();
     }
 
-    std::optional<Card> draw_card() {
+    [[nodiscard]] std::optional<Card> draw_card() {
         if (cards_.empty()) {
             return std::nullopt;
         }
@@ -29,7 +29,7 @@ public:
     void shuffle() { std::shuffle(cards_.begin(), cards_.end(), rng_); }
 
     // Only for testing purposes, allows drawing a specific card from the deck
-    std::optional<Card> draw_specific_card(Suit suit, Rank rank) {
+    [[nodiscard]] std::optional<Card> draw_specific_card(Suit suit, Rank rank) {
         for (auto it = cards_.begin(); it != cards_.end(); ++it) {
             if (it->suit() == suit && it->rank() == rank) {
                 Card card = *it;

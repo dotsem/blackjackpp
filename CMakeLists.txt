@@ -32,7 +32,7 @@ add_executable(unit_tests
     src/domain/hand_test.cpp
     src/domain/player_test.cpp
     src/domain/dealer_test.cpp
-    # src/domain/game_test.cpp
+    src/domain/game_test.cpp
 )
 
 target_include_directories(unit_tests PRIVATE src)
