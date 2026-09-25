@@ -26,7 +26,13 @@ public:
         active_hand_index_ = 0;
     }
 
-    void add_card(Card card) { current_hand().hand.add_card(card, true); }
+    void add_card_to_current_hand(Card card) { current_hand().hand.add_card(card, true); }
+    void add_card_to_hand(Card card, size_t hand_index) {
+        if (hand_index >= hands_.size()) {
+            throw std::runtime_error("Hand index out of bounds.");
+        }
+        hands_[hand_index].hand.add_card(card);
+    }
 
     bool can_split() const noexcept {
         if (active_hand_index_ >= hands_.size())

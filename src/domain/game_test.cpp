@@ -6,6 +6,7 @@
 #include "domain/game.hpp"
 #include "domain/player.hpp"
 
+#include <cstdio>
 #include <gtest/gtest.h>
 
 using namespace domain;
@@ -179,8 +180,8 @@ TEST(GameState, split_splits_hand) {
     Player player;
     Card card1{Suit::Hearts, Rank::Eight};
     Card card2{Suit::Diamonds, Rank::Eight};
-    player.add_card(card1);
-    player.add_card(card2);
+    player.add_card_to_current_hand(card1);
+    player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
     Dealer dealer;
     Deck deck;
@@ -191,6 +192,8 @@ TEST(GameState, split_splits_hand) {
 
     EXPECT_EQ(game.player().hands().size(), 2);
     EXPECT_EQ(game.player().active_hand_index(), 0);
+    EXPECT_EQ(game.player().hands()[0].hand.cards().size(), 2);
+    EXPECT_EQ(game.player().hands()[1].hand.cards().size(), 2);
 }
 
 TEST(GameState, split_throws_if_not_in_player_turn_state) {
@@ -229,8 +232,8 @@ TEST(GameState, evaluate_hand_sets_outcome_for_busted_hand) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_winning_hand) {
     Player player;
-    player.add_card({Suit::Hearts, Rank::Ten});
-    player.add_card({Suit::Diamonds, Rank::Queen});
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::Queen});
     player.active_hand().bet = 100;
 
     Dealer dealer;
@@ -247,8 +250,8 @@ TEST(GameState, evaluate_hand_sets_outcome_for_winning_hand) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_losing_hand) {
     Player player;
-    player.add_card({Suit::Hearts, Rank::Ten});
-    player.add_card({Suit::Diamonds, Rank::Eight});
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::Eight});
     player.active_hand().bet = 100;
 
     Dealer dealer;
@@ -265,8 +268,8 @@ TEST(GameState, evaluate_hand_sets_outcome_for_losing_hand) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_push) {
     Player player;
-    player.add_card({Suit::Hearts, Rank::Ten});
-    player.add_card({Suit::Diamonds, Rank::Eight});
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::Eight});
     player.active_hand().bet = 100;
 
     Dealer dealer;
@@ -283,8 +286,8 @@ TEST(GameState, evaluate_hand_sets_outcome_for_push) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_blackjack) {
     Player player;
-    player.add_card({Suit::Hearts, Rank::Ace});
-    player.add_card({Suit::Diamonds, Rank::King});
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Ace});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::King});
     player.active_hand().bet = 100;
 
     Dealer dealer;
@@ -301,8 +304,8 @@ TEST(GameState, evaluate_hand_sets_outcome_for_blackjack) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_blackjack_push) {
     Player player;
-    player.add_card({Suit::Hearts, Rank::Ace});
-    player.add_card({Suit::Diamonds, Rank::King});
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Ace});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::King});
     player.active_hand().bet = 100;
 
     Dealer dealer;
@@ -318,20 +321,20 @@ TEST(GameState, evaluate_hand_sets_outcome_for_blackjack_push) {
 }
 
 TEST(GameState, evaluate_hand_does_nothing_if_not_in_dealer_turn_or_round_over) {
-    Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
-
+    Player player;
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Two});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::Three});
+    player.active_hand().bet = 100;
+    Game game(player, Dealer{}, Deck{});
+    game.set_state(GameState::PlayerTurn);
     game.evaluate_hand(0);
-
     EXPECT_EQ(game.player().hands()[0].outcome, HandOutcome::Pending);
 }
 
 TEST(GameState, finish_round_calculates_total_bet_and_payout) {
     Player player;
-    player.add_card({Suit::Hearts, Rank::Ten});
-    player.add_card({Suit::Diamonds, Rank::Queen});
+    player.add_card_to_current_hand({Suit::Hearts, Rank::Ten});
+    player.add_card_to_current_hand({Suit::Diamonds, Rank::Queen});
     player.active_hand().bet = 100;
 
     Dealer dealer;
@@ -346,4 +349,18 @@ TEST(GameState, finish_round_calculates_total_bet_and_payout) {
 
     EXPECT_EQ(summary.total_bet, 100);
     EXPECT_EQ(summary.total_payout, 200);
+}
+
+TEST(GameState, finish_round_throws_if_any_hand_is_pending) {
+    Game game = test_helpers::create_split_game();
+
+    game.set_state(GameState::PlayerTurn);
+
+    while (!game.player().hands()[0].hand.is_busted()) {
+        game.hit();
+    }
+
+    EXPECT_EQ(game.player().hands()[0].outcome, HandOutcome::Busted);
+    EXPECT_EQ(game.player().hands()[1].outcome, HandOutcome::Pending);
+    EXPECT_THROW(game.finish_round(), std::runtime_error);
 }

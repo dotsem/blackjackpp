@@ -13,11 +13,15 @@ void Game::deal_initial_cards() {
     }
 
     for (int i = 0; i < 2; ++i) {
-        deal_card_to_player();
+        deal_card_to_player_current_hand();
     }
 
     deal_card_to_dealer();
     deal_card_to_dealer(false);
+
+    if (player_.active_hand().hand.is_blackjack()) {
+        set_state(GameState::DealerTurn);
+    }
 }
 
 void Game::deal_dealer_cards() {
@@ -28,7 +32,8 @@ void Game::deal_dealer_cards() {
     dealer_.reveal_hole_card();
     events_.emplace_back(HoleCardRevealedEvent{dealer_.hand().cards()[1].card});
 
-    while (dealer_.hand().is_soft() || dealer_.hand().value() < 17) {
+    while ((dealer_.hand().is_soft() && dealer_.hand().value() == 17) ||
+           dealer_.hand().value() < 17) {
         deal_card_to_dealer();
     }
 
@@ -42,7 +47,7 @@ void Game::hit() {
         throw std::runtime_error("Cannot hit at this time.");
     }
 
-    deal_card_to_player();
+    deal_card_to_player_current_hand();
 
     if (player_.active_hand().hand.is_busted()) {
         player_.set_outcome_for_current_hand(HandOutcome::Busted);
@@ -69,12 +74,7 @@ void Game::double_down() {
         throw std::runtime_error("Cannot double down due to insufficient chips or invalid hand.");
     }
 
-    auto card_opt = deck_.draw_card();
-    if (!card_opt) {
-        throw std::runtime_error("Deck is empty. Cannot draw a card.");
-    }
-
-    player_.add_card(*card_opt);
+    deal_card_to_player_current_hand();
 
     if (player_.active_hand().hand.is_busted()) {
         player_.set_outcome_for_current_hand(HandOutcome::Busted);
@@ -94,6 +94,15 @@ void Game::split() {
     }
 
     player_.split();
+
+    size_t new_hand_idx = player_.active_hand_index() + 1;
+
+    if (player_.hands().size() <= new_hand_idx) {
+        throw std::runtime_error("New hand index is out of bounds after split.");
+    }
+
+    deal_card_to_player_current_hand();
+    deal_card_to_player_hand(new_hand_idx);
 }
 
 void Game::evaluate_hand(int hand_index) {
@@ -159,7 +168,7 @@ int Game::payout() {
 
             break;
         case HandOutcome::Pending:
-            std::runtime_error("Cannot calculate payout for a hand that is still pending.");
+            throw std::runtime_error("Cannot calculate payout for a hand that is still pending.");
         }
     }
     return total_payout;

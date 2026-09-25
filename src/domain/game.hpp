@@ -8,9 +8,9 @@
 #include <optional>
 namespace domain {
 
-enum GameState { WaitingForBets, Dealing, PlayerTurn, DealerTurn, RoundOver };
+enum class GameState { WaitingForBets, Dealing, PlayerTurn, DealerTurn, RoundOver };
 
-enum GameResult { PlayerBust, DealerBust, PlayerBlackjack, DealerBlackjack, Push };
+enum class GameResult { PlayerBust, DealerBust, PlayerBlackjack, DealerBlackjack, Push };
 
 struct RoundSummary {
     int total_bet{0};
@@ -82,15 +82,6 @@ private:
     GameState state_{GameState::WaitingForBets};
     std::optional<GameResult> result_{std::nullopt};
 
-    void deal_card_to_player() {
-        auto card_opt = deck_.draw_card();
-        if (!card_opt) {
-            throw std::runtime_error("Deck is empty. Cannot draw a card.");
-        }
-        player_.add_card(*card_opt);
-        events_.emplace_back(CardDealtEvent{*card_opt, false, player_.active_hand_index(), true});
-    }
-
     void deal_card_to_dealer(bool is_face_up = true) {
         auto card_opt = deck_.draw_card();
         if (!card_opt) {
@@ -102,6 +93,19 @@ private:
             dealer_.add_hole_card(*card_opt);
         }
         events_.emplace_back(CardDealtEvent{*card_opt, true, 0, is_face_up});
+    }
+
+    void deal_card_to_player_hand(size_t hand_index) {
+        auto card_opt = deck_.draw_card();
+        if (!card_opt) {
+            throw std::runtime_error("Deck is empty. Cannot draw a card.");
+        }
+        player_.add_card_to_hand(*card_opt, hand_index);
+        events_.emplace_back(CardDealtEvent{*card_opt, false, hand_index, true});
+    }
+
+    void deal_card_to_player_current_hand() {
+        deal_card_to_player_hand(player_.active_hand_index());
     }
 
     [[nodiscard]] int payout();

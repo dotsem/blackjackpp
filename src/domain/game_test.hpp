@@ -18,8 +18,8 @@ inline domain::Game create_split_game(int chips = 1000) {
     domain::Player player(chips);
     domain::Card card1{domain::Suit::Hearts, domain::Rank::Eight};
     domain::Card card2{domain::Suit::Diamonds, domain::Rank::Eight};
-    player.add_card(card1);
-    player.add_card(card2);
+    player.add_card_to_current_hand(card1);
+    player.add_card_to_current_hand(card2);
     player.active_hand().bet = 100;
     player.split();
 
