@@ -1,25 +1,18 @@
 #pragma once
+
+#include "SDL_fur_coat/resource.hpp"
 #include <SDL3/SDL.h>
-#include <memory>
 #include <stdexcept>
 #include <string_view>
 
 namespace sdl {
 
+    using WindowHandle = UniqueResource<SDL_Window, SDL_DestroyWindow>;
+
     class Window {
-        struct Deleter {
-            void operator()(SDL_Window* w) const noexcept {
-                if (w != nullptr) {
-                    SDL_DestroyWindow(w);
-                }
-            }
-        };
-
-        using Ptr = std::unique_ptr<SDL_Window, Deleter>;
-
     public:
         Window(std::string_view title, int width, int height, SDL_WindowFlags flags = 0)
-            : handle_(SDL_CreateWindow(title.data(), width, height, flags)) {
+            : handle_(SDL_CreateWindow(std::string(title).c_str(), width, height, flags)) {
             if (!handle_) {
                 throw std::runtime_error(SDL_GetError());
             }
@@ -30,6 +23,7 @@ namespace sdl {
         }
 
     private:
-        Ptr handle_;
+        WindowHandle handle_;
     };
+
 } // namespace sdl

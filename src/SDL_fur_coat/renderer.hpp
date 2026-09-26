@@ -1,22 +1,15 @@
 #pragma once
-#include "SDL3/SDL_render.h"
+
+#include "SDL_fur_coat/resource.hpp"
 #include <SDL3/SDL.h>
-#include <memory>
+#include <SDL3/SDL_render.h>
 #include <stdexcept>
 
 namespace sdl {
 
+    using RendererHandle = UniqueResource<SDL_Renderer, SDL_DestroyRenderer>;
+
     class Renderer {
-        struct Deleter {
-            void operator()(SDL_Renderer* r) const noexcept {
-                if (r != nullptr) {
-                    SDL_DestroyRenderer(r);
-                }
-            }
-        };
-
-        using Ptr = std::unique_ptr<SDL_Renderer, Deleter>;
-
     public:
         Renderer(SDL_Window* window, const char* name = nullptr)
             : handle_(SDL_CreateRenderer(window, name)) {
@@ -30,6 +23,7 @@ namespace sdl {
         }
 
     private:
-        Ptr handle_;
+        RendererHandle handle_;
     };
+
 } // namespace sdl
