@@ -1,4 +1,4 @@
-#include "domain/game.hpp"
+#include "game.hpp"
 #include "game_test.hpp"
 #include "gtest/gtest.h"
 

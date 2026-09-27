@@ -1,6 +1,6 @@
 #pragma once
 
-#include "domain/card.hpp"
+#include "card.hpp"
 #include <cstddef>
 #include <variant>
 

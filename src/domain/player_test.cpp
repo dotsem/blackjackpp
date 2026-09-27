@@ -1,5 +1,5 @@
-#include "domain/card.hpp"
-#include "domain/player.hpp"
+#include "card.hpp"
+#include "player.hpp"
 #include <gtest/gtest.h>
 
 using namespace domain;

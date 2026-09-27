@@ -1,9 +1,9 @@
-#include "domain/game_test.hpp"
-#include "domain/card.hpp"
-#include "domain/dealer.hpp"
-#include "domain/deck.hpp"
-#include "domain/game.hpp"
-#include "domain/player.hpp"
+#include "game_test.hpp"
+#include "card.hpp"
+#include "dealer.hpp"
+#include "deck.hpp"
+#include "game.hpp"
+#include "player.hpp"
 #include <gtest/gtest.h>
 
 using namespace domain;

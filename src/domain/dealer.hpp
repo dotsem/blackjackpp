@@ -1,6 +1,6 @@
 #pragma once
 
-#include "domain/hand.hpp"
+#include "hand.hpp"
 
 namespace domain {
     class Dealer {

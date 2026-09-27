@@ -18,17 +18,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3 googletest)
 
+add_library(domain STATIC
+    src/domain/game.cpp
+)
 
-add_executable(blackjack++ main.cpp src/domain/game.cpp)
+add_executable(blackjack++ main.cpp src/app.cpp)
 
 target_include_directories(blackjack++ PRIVATE src)
+target_include_directories(domain PUBLIC src)
 target_compile_definitions(blackjack++ PRIVATE SDL_MAIN_USE_CALLBACKS=1)
-target_link_libraries(blackjack++ PRIVATE SDL3::SDL3)
+target_link_libraries(blackjack++ PRIVATE domain SDL3::SDL3)
 
 enable_testing()
 add_executable(unit_tests
-    src/domain/game.cpp
-
     src/domain/card_test.cpp
     src/domain/deck_test.cpp
     src/domain/hand_test.cpp
@@ -39,7 +41,7 @@ add_executable(unit_tests
 )
 
 target_include_directories(unit_tests PRIVATE src)
-target_link_libraries(unit_tests PRIVATE GTest::gtest_main)
+target_link_libraries(unit_tests PRIVATE domain GTest::gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(unit_tests)

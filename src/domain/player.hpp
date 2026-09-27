@@ -1,5 +1,5 @@
 #pragma once
-#include "domain/hand.hpp"
+#include "hand.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <vector>

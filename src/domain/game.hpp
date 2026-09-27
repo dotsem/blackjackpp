@@ -1,9 +1,9 @@
 #pragma once
 
-#include "domain/dealer.hpp"
-#include "domain/deck.hpp"
-#include "domain/event.hpp"
-#include "domain/player.hpp"
+#include "dealer.hpp"
+#include "deck.hpp"
+#include "event.hpp"
+#include "player.hpp"
 #include <optional>
 
 namespace domain {
@@ -44,6 +44,14 @@ namespace domain {
             , dealer_(std::move(dealer))
             , deck_(std::move(deck)) {
         }
+
+        ~Game() = default;
+
+        Game(const Game&) = delete;
+        Game& operator=(const Game&) = delete;
+
+        Game(Game&&) noexcept = default;
+        Game& operator=(Game&&) noexcept = default;
 
         [[nodiscard]] int total_bet() const noexcept {
             int total = 0;

@@ -1,4 +1,4 @@
-#include "domain/dealer.hpp"
+#include "dealer.hpp"
 #include <gtest/gtest.h>
 
 using namespace domain;

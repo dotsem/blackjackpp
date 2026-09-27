@@ -1,4 +1,4 @@
-#include "domain/card.hpp"
+#include "card.hpp"
 #include <gtest/gtest.h>
 
 using namespace domain;

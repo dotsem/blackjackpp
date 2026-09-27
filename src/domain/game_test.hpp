@@ -1,8 +1,8 @@
 #pragma once
 
-#include "domain/dealer.hpp"
-#include "domain/deck.hpp"
-#include "domain/game.hpp"
+#include "dealer.hpp"
+#include "deck.hpp"
+#include "game.hpp"
 
 namespace test_helpers {
 
