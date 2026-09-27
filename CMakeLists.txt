@@ -22,12 +22,15 @@ add_library(domain STATIC
     src/domain/game.cpp
 )
 
+target_include_directories(domain PUBLIC src)
+
+add_subdirectory(src/presentation)
+
 add_executable(blackjack++ main.cpp src/app.cpp)
 
 target_include_directories(blackjack++ PRIVATE src)
-target_include_directories(domain PUBLIC src)
 target_compile_definitions(blackjack++ PRIVATE SDL_MAIN_USE_CALLBACKS=1)
-target_link_libraries(blackjack++ PRIVATE domain SDL3::SDL3)
+target_link_libraries(blackjack++ PRIVATE presentation)
 
 enable_testing()
 add_executable(unit_tests

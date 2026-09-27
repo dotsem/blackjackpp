@@ -1,6 +1,6 @@
 
 #include "app.hpp"
-#include "SDL3/SDL_keycode.h"
+#include "presentation/views/table_view.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_pixels.h>
@@ -10,38 +10,19 @@
 App::App(std::string_view title, int width, int height)
     : window_(title, width, height, SDL_WINDOW_RESIZABLE)
     , renderer_(window_.get())
+    , current_view_(new presentation::TableView())
     , last_ticks_(SDL_GetTicksNS())
     , game_(domain::Game(domain::Player{ 1000 }, domain::Dealer{}, domain::Deck{})) {
     SDL_SetRenderLogicalPresentation(renderer_.get(), width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 }
 
 SDL_AppResult App::handle_event(const SDL_Event& event) {
-    switch (event.type) {
-        case SDL_EVENT_QUIT:
-            return SDL_APP_SUCCESS;
-        case SDL_EVENT_KEY_DOWN:
-            switch (event.key.key) {
-                case SDLK_ESCAPE:
-                    return SDL_APP_SUCCESS;
-                case SDLK_SPACE:
-                    game_.hit();
-                    break;
-                case SDLK_RETURN:
-                    game_.stand();
-                    break;
-                case SDLK_D:
-                    game_.double_down();
-                    break;
-                case SDLK_S:
-                    game_.split();
-                    break;
-                default:
-                    break;
-            }
-        default:
-            break;
+    try {
+        return current_view_->handle_event(event, game_);
+    } catch (const std::exception& e) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Domain action rejected: %s", e.what());
+        return SDL_APP_CONTINUE;
     }
-    return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult App::tick() {

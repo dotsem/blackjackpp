@@ -4,6 +4,7 @@
 #include "SDL_fur_coat/renderer.hpp"
 #include "SDL_fur_coat/window.hpp"
 #include "domain/game.hpp"
+#include "presentation/views/view.hpp"
 
 // why: avoid large SDL_Event.h header to be included
 union SDL_Event;
@@ -24,6 +25,7 @@ public:
 private:
     sdl::Window window_;
     sdl::Renderer renderer_;
+    presentation::View* current_view_{ nullptr };
     uint64_t last_ticks_{ 0 };
     bool is_running_{ true };
     domain::Game game_;
