@@ -56,3 +56,24 @@ TEST(DeckTest, shuffle_changes_order_of_cards) {
     // After shuffling, the order should be different
     EXPECT_NE(deck1.cards(), deck2.cards());
 }
+
+TEST(DeckTest, shuffle_is_truly_random) {
+    Deck deck1;
+    Deck deck2;
+
+    deck1.shuffle();
+    deck2.shuffle();
+
+    // The moment this test fails, i'm betting on the lottery
+    bool are_equal = true;
+    for (int i = 0; i < 5; ++i) {
+        deck1.shuffle();
+        deck2.shuffle();
+        if (deck1.cards() != deck2.cards()) {
+            are_equal = false;
+            break;
+        }
+    }
+
+    EXPECT_FALSE(are_equal);
+}
