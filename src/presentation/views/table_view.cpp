@@ -12,16 +12,24 @@ namespace presentation {
                     case SDLK_ESCAPE:
                         return SDL_APP_SUCCESS;
                     case SDLK_SPACE:
-                        game.hit();
+                        if (game.can_hit()) {
+                            game.hit();
+                        }
                         break;
                     case SDLK_RETURN:
-                        game.stand();
+                        if (game.can_stand()) {
+                            game.stand();
+                        }
                         break;
                     case SDLK_D:
-                        game.double_down();
+                        if (game.can_double_down()) {
+                            game.double_down();
+                        }
                         break;
                     case SDLK_S:
-                        game.split();
+                        if (game.can_split()) {
+                            game.split();
+                        }
                         break;
                     default:
                         break;

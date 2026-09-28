@@ -85,6 +85,27 @@ namespace domain {
             return deck_;
         }
 
+        // TODO: add tests for these 5 methods
+        [[nodiscard]] bool can_place_bet(int amount) const noexcept {
+            return state_ == GameState::WaitingForBets && amount > 0 && amount <= player_.chips();
+        }
+
+        [[nodiscard]] bool can_hit() const noexcept {
+            return state_ == GameState::PlayerTurn;
+        }
+
+        [[nodiscard]] bool can_stand() const noexcept {
+            return state_ == GameState::PlayerTurn;
+        }
+
+        [[nodiscard]] bool can_split() const noexcept {
+            return state_ == GameState::PlayerTurn && player_.can_split() && player_.chips() >= total_bet();
+        }
+
+        [[nodiscard]] bool can_double_down() const noexcept {
+            return state_ == GameState::PlayerTurn && player_.active_hand().hand.size() == 2 && player_.chips() >= total_bet();
+        }
+
         void deal_initial_cards();
         void deal_dealer_cards();
 
