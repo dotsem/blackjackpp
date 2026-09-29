@@ -57,7 +57,7 @@ namespace domain {
 
         void fill_deck() {
             cards_.reserve(DeckSize);
-            for (int s = static_cast<int>(Suit::Clubs); s <= static_cast<int>(Suit::Spades); ++s) {
+            for (int s = static_cast<int>(Suit::Diamonds); s <= static_cast<int>(Suit::Clubs); ++s) {
                 for (int r = static_cast<int>(Rank::Two); r <= static_cast<int>(Rank::Ace); ++r) {
                     cards_.emplace_back(static_cast<Suit>(s), static_cast<Rank>(r));
                 }
