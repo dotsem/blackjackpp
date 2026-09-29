@@ -22,6 +22,7 @@ namespace presentation {
         if (texture == nullptr) {
             throw std::runtime_error("Failed to create texture from surface: " + path + " - " + SDL_GetError());
         }
+        SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
 
         textures_.emplace(path, TextureHandle(texture));
 
