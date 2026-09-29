@@ -14,6 +14,8 @@ namespace presentation {
 
     class CardSpriteSheet {
     public:
+        static constexpr float DefaultScale = 3.0F;
+
         struct SheetConfig {
             float margin_x{ 11.0F };
             float margin_y{ 2.0F };
@@ -40,13 +42,11 @@ namespace presentation {
 
         void render(SDL_Renderer* renderer, const domain::Card& card, SDL_FRect dst) const {
             const auto idx = card_index(card.suit(), card.rank(), config_.cols);
-            const SDL_FRect& src = lut_.at(idx);
-            SDL_RenderTexture(renderer, texture_, &src, &dst);
+            render_(renderer, idx, SDL_FPoint{ .x = dst.x, .y = dst.y }, dst.w / config_.card_w);
         }
 
         void render_back(SDL_Renderer* renderer, SDL_FRect dst) const {
-            const SDL_FRect& src = lut_.at(CARD_BACK_IDX);
-            SDL_RenderTexture(renderer, texture_, &src, &dst);
+            render_(renderer, CARD_BACK_IDX, SDL_FPoint{ .x = dst.x, .y = dst.y }, dst.w / config_.card_w);
         }
 
     private:
@@ -54,9 +54,20 @@ namespace presentation {
         SheetConfig config_;
         std::array<SDL_FRect, 56> lut_{};
 
-        static constexpr size_t card_index(domain::Suit suit, domain::Rank rank, int cols) noexcept {
-            const auto r_idx = static_cast<size_t>(rank) - 2; // rank starts at 2
-            const auto s_idx = static_cast<size_t>(suit);
+        void render_(SDL_Renderer* renderer, int idx, SDL_FPoint position, float scale = DefaultScale) const {
+            const SDL_FRect dst{
+                .x = position.x,
+                .y = position.y,
+                .w = 48.0F * scale,
+                .h = 64.0F * scale
+            };
+            const SDL_FRect& src = lut_.at(idx);
+            SDL_RenderTexture(renderer, texture_, &src, &dst);
+        }
+
+        static constexpr int card_index(domain::Suit suit, domain::Rank rank, int cols) noexcept {
+            const auto r_idx = static_cast<int>(rank) - 2; // rank starts at 2
+            const auto s_idx = static_cast<int>(suit);
             return (s_idx * cols) + r_idx;
         }
 

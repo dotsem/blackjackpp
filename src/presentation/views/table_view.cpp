@@ -84,12 +84,12 @@ namespace presentation {
                 const float x = 20.0F + (static_cast<float>(rank_val - 2) * 55.0F);
                 const float y = 20.0F + (static_cast<float>(suit_idx) * 75.0F);
 
-                card_sprites_.render(renderer_, card, SDL_FRect{ .x = x, .y = y, .w = 48.0F, .h = 64.0F });
+                card_sprites_.render(renderer_, card, SDL_FRect{ .x = x, .y = y, .w = 48.0F * 3.0F, .h = 64.0F * 3.0F });
             }
         }
 
         // Test card back
-        card_sprites_.render_back(renderer_, SDL_FRect{ .x = 20.0F, .y = 330.0F, .w = 48.0F, .h = 64.0F });
+        card_sprites_.render_back(renderer_, SDL_FRect{ .x = 20.0F, .y = 330.0F, .w = 48.0F * 3.0F, .h = 64.0F * 3.0F });
         SDL_RenderPresent(renderer_);
     }
 
