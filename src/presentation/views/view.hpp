@@ -18,7 +18,7 @@ namespace presentation {
         View(View&&) = default;
         View& operator=(View&&) = default;
 
-        [[nodiscard]] virtual SDL_AppResult tick(domain::Game& game) = 0;
-        [[nodiscard]] virtual SDL_AppResult handle_event(const SDL_Event& event, domain::Game& game) = 0;
+        [[nodiscard]] virtual SDL_AppResult tick(float dt) = 0;
+        [[nodiscard]] virtual SDL_AppResult handle_event(const SDL_Event& event) = 0;
     };
 }

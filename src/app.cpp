@@ -1,5 +1,6 @@
 
 #include "app.hpp"
+#include "presentation/assets/texture_manager.hpp"
 #include "presentation/views/table_view.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
@@ -10,7 +11,8 @@
 App::App(std::string_view title, int width, int height)
     : window_(title, width, height, SDL_WINDOW_RESIZABLE)
     , renderer_(window_.get())
-    , current_view_(new presentation::TableView())
+    , textures_(renderer_.get())
+    , current_view_(new presentation::TableView(renderer_.get(), textures_, &game_))
     , last_ticks_(SDL_GetTicksNS())
     , game_(domain::Game(domain::Player{ 1000 }, domain::Dealer{}, domain::Deck{})) {
     SDL_SetRenderLogicalPresentation(renderer_.get(), width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
@@ -18,7 +20,7 @@ App::App(std::string_view title, int width, int height)
 
 SDL_AppResult App::handle_event(const SDL_Event& event) {
     try {
-        return current_view_->handle_event(event, game_);
+        return current_view_->handle_event(event);
     } catch (const std::exception& e) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Domain action rejected: %s", e.what());
         return SDL_APP_CONTINUE;
@@ -34,9 +36,5 @@ SDL_AppResult App::tick() {
     [[maybe_unused]] const auto dt = static_cast<float>(now - last_ticks_) / 1'000'000'000.0F;
     last_ticks_ = now;
 
-    SDL_SetRenderDrawColor(renderer_.get(), 18, 18, 18, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer_.get());
-    SDL_RenderPresent(renderer_.get());
-
-    return SDL_APP_CONTINUE;
+    return current_view_->tick(dt);
 }
