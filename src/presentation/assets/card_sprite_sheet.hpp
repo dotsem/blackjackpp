@@ -1,6 +1,7 @@
 #pragma once
 
 #include "domain/card.hpp"
+#include "presentation/assets/texture_manager.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <array>
@@ -10,14 +11,22 @@ namespace presentation {
     class CardSpriteSheet {
     public:
         struct SheetConfig {
-            float margin_x{ 6.0F };
-            float margin_y{ 6.0F };
-            float gap_x{ 4.0F };
-            float gap_y{ 4.0F };
-            float card_w{ 48.0F };
-            float card_h{ 64.0F };
+            float margin_x{ 11.0F };
+            float margin_y{ 2.0F };
+            float gap_x{ 23.0F };
+            float gap_y{ 5.0F };
+            float card_w{ 42.0F };
+            float card_h{ 60.0F };
             int cols{ 13 };
         };
+
+        static CardSpriteSheet load(TextureManager& textures) {
+            auto* texture = textures.load("assets/cards.png");
+            if (texture == nullptr) {
+                throw std::runtime_error("Failed to load card sprite sheet texture");
+            }
+            return CardSpriteSheet(texture, SheetConfig{});
+        }
 
         CardSpriteSheet(SDL_Texture* texture, const SheetConfig& cfg)
             : texture_(texture)
@@ -44,7 +53,7 @@ namespace presentation {
         std::array<SDL_FRect, 53> lut_{};
 
         static constexpr size_t card_index(domain::Suit suit, domain::Rank rank) noexcept {
-            const auto r_idx = static_cast<size_t>(rank);
+            const auto r_idx = static_cast<size_t>(rank) - 2; // rank starts at 2
             const auto s_idx = static_cast<size_t>(suit);
             return (s_idx * 13) + r_idx;
         }

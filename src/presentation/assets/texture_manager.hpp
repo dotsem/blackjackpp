@@ -1,6 +1,8 @@
 #pragma once
+#include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
 #include "SDL_fur_coat/resource.hpp"
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 
@@ -12,6 +14,7 @@ namespace presentation {
     public:
         explicit TextureManager(SDL_Renderer* renderer)
             : renderer_(renderer) {
+            SDL_Log("Invoked in: %s", std::filesystem::current_path().string().c_str());
         }
 
         ~TextureManager() = default;

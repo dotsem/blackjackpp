@@ -71,8 +71,25 @@ namespace presentation {
     }
 
     void TableView::render_table_background() {
-        SDL_SetRenderDrawColor(renderer_, 18, 18, 18, SDL_ALPHA_OPAQUE);
+        SDL_SetRenderDrawColor(renderer_, 0, 255, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer_);
+
+        // test: draw all 52 cards in a 13x4 grid to test the sprite sheet
+        for (int suit_idx = 0; suit_idx < 4; ++suit_idx) {
+            for (int rank_val = 2; rank_val <= 14; ++rank_val) {
+                const domain::Card card(
+                    static_cast<domain::Suit>(suit_idx),
+                    static_cast<domain::Rank>(rank_val));
+
+                const float x = 20.0F + (static_cast<float>(rank_val - 2) * 55.0F);
+                const float y = 20.0F + (static_cast<float>(suit_idx) * 75.0F);
+
+                card_sprites_.render(renderer_, card, SDL_FRect{ .x = x, .y = y, .w = 48.0F, .h = 64.0F });
+            }
+        }
+
+        // Test card back
+        card_sprites_.render_back(renderer_, SDL_FRect{ .x = 20.0F, .y = 330.0F, .w = 48.0F, .h = 64.0F });
         SDL_RenderPresent(renderer_);
     }
 

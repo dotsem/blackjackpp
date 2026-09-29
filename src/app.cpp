@@ -9,12 +9,12 @@
 #include <SDL3/SDL_video.h>
 
 App::App(std::string_view title, int width, int height)
-    : window_(title, width, height, SDL_WINDOW_RESIZABLE)
+    : game_(domain::Game(domain::Player(), domain::Dealer(), domain::Deck()))
+    , window_(title, width, height, SDL_WINDOW_RESIZABLE)
     , renderer_(window_.get())
     , textures_(renderer_.get())
     , current_view_(new presentation::TableView(renderer_.get(), textures_, &game_))
-    , last_ticks_(SDL_GetTicksNS())
-    , game_(domain::Game(domain::Player{ 1000 }, domain::Dealer{}, domain::Deck{})) {
+    , last_ticks_(SDL_GetTicksNS()) {
     SDL_SetRenderLogicalPresentation(renderer_.get(), width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 }
 

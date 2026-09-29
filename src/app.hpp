@@ -24,11 +24,11 @@ public:
     [[nodiscard]] SDL_AppResult tick();
 
 private:
+    domain::Game game_;
     sdl::Window window_;
     sdl::Renderer renderer_;
     presentation::TextureManager textures_;
     presentation::View* current_view_{ nullptr };
     uint64_t last_ticks_{ 0 };
     bool is_running_{ true };
-    domain::Game game_;
 };

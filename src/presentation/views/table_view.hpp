@@ -1,6 +1,7 @@
 #pragma once
 
 #include "domain/game.hpp"
+#include "presentation/assets/card_sprite_sheet.hpp"
 #include "presentation/assets/texture_manager.hpp"
 #include "view.hpp"
 #include <SDL3/SDL_events.h>
@@ -12,7 +13,8 @@ namespace presentation {
         TableView(SDL_Renderer* renderer, TextureManager& textures, domain::Game* game)
             : renderer_(renderer)
             , textures_(&textures)
-            , game_(game) {
+            , game_(game)
+            , card_sprites_(CardSpriteSheet::load(textures)) {
         }
 
         ~TableView() override = default;
@@ -31,6 +33,7 @@ namespace presentation {
         SDL_Renderer* renderer_;
         TextureManager* textures_;
         domain::Game* game_{ nullptr };
+        CardSpriteSheet card_sprites_;
 
         void render_table_background();
         void render_dealer_hand();

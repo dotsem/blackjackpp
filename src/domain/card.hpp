@@ -8,11 +8,12 @@ namespace {
 }
 
 namespace domain {
+    //! keep this order, as the spritesheet depends on it
     enum class Suit : std::uint8_t {
-        Clubs,
         Diamonds,
+        Spades,
         Hearts,
-        Spades
+        Clubs,
     };
     enum class Rank : std::uint8_t {
         Two = 2,
