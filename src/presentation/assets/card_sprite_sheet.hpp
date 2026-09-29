@@ -6,6 +6,10 @@
 #include <SDL3/SDL_render.h>
 #include <array>
 
+namespace {
+    constexpr int CARD_BACK_IDX = 27;
+}
+
 namespace presentation {
 
     class CardSpriteSheet {
@@ -17,7 +21,7 @@ namespace presentation {
             float gap_y{ 5.0F };
             float card_w{ 42.0F };
             float card_h{ 60.0F };
-            int cols{ 13 };
+            int cols{ 14 };
         };
 
         static CardSpriteSheet load(TextureManager& textures) {
@@ -35,32 +39,32 @@ namespace presentation {
         }
 
         void render(SDL_Renderer* renderer, const domain::Card& card, SDL_FRect dst) const {
-            const auto idx = card_index(card.suit(), card.rank());
+            const auto idx = card_index(card.suit(), card.rank(), config_.cols);
             const SDL_FRect& src = lut_.at(idx);
             SDL_RenderTexture(renderer, texture_, &src, &dst);
         }
 
         void render_back(SDL_Renderer* renderer, SDL_FRect dst) const {
-            const auto idx = 52;
-            const SDL_FRect& src = lut_.at(idx);
+            const SDL_FRect& src = lut_.at(CARD_BACK_IDX);
             SDL_RenderTexture(renderer, texture_, &src, &dst);
         }
 
     private:
         SDL_Texture* texture_{ nullptr };
         SheetConfig config_;
-        // cheap hack, 53th card is the back of the card
-        std::array<SDL_FRect, 53> lut_{};
+        std::array<SDL_FRect, 56> lut_{};
 
-        static constexpr size_t card_index(domain::Suit suit, domain::Rank rank) noexcept {
+        static constexpr size_t card_index(domain::Suit suit, domain::Rank rank, int cols) noexcept {
             const auto r_idx = static_cast<size_t>(rank) - 2; // rank starts at 2
             const auto s_idx = static_cast<size_t>(suit);
-            return (s_idx * 13) + r_idx;
+            return (s_idx * cols) + r_idx;
         }
 
+        /// Last row isn't really used as it contains jokers & the card backs
+        /// It is just there to render the card back
         void build_lookup_table() noexcept {
             const auto cols = static_cast<size_t>(config_.cols);
-            for (size_t i = 0; i < 53; ++i) {
+            for (size_t i = 0; i < 56; ++i) {
                 const auto col_idx = i % cols;
                 const auto row_idx = i / cols;
 
