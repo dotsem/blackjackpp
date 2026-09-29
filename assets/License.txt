@@ -1,10 +1,22 @@
 	
 
-	Card Pack by Andrew Tidey
+	Playing Cards Pack
 
-	License (Creative Commons Zero, CC0)
+	Created/distributed by Kenney (www.kenney.nl)
+	Creation date: 01-12-2020
+
+			------------------------------
+
+	License: (Creative Commons Zero, CC0)
 	http://creativecommons.org/publicdomain/zero/1.0/
-	You may use these assets in personal and commercial projects.
 
-	Credit to me via name (Andrew Tidey) or link to website (andrewtidey.blogspot.co.uk) is
-	appreciated but not necessary :)
+	This content is free to use in personal, educational and commercial projects.
+	Support us by crediting Kenney or www.kenney.nl (this is not mandatory)
+
+			------------------------------
+
+	Donate:   http://support.kenney.nl
+	Patreon:  http://patreon.com/kenney/
+
+	Follow on Twitter for updates:
+	http://twitter.com/KenneyNL
