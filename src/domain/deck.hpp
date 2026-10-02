@@ -17,6 +17,10 @@ namespace domain {
             fill_deck();
         }
 
+        explicit Deck(std::vector<Card> cards)
+            : cards_(std::move(cards)) {
+        }
+
         void reset() {
             cards_.clear();
             fill_deck();

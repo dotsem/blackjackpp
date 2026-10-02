@@ -14,6 +14,13 @@ namespace test_helpers {
         return game;
     }
 
+    inline domain::Game create_game_with_deck(std::vector<domain::Card> cards, int chips = 1000) {
+        domain::Player player(chips);
+        domain::Dealer dealer;
+        domain::Deck deck(std::move(cards));
+        return domain::Game(std::move(player), std::move(dealer), std::move(deck));
+    }
+
     inline domain::Game create_split_game(int chips = 1000) {
         domain::Player player(chips);
         domain::Card card1{ domain::Suit::Hearts, domain::Rank::Eight };

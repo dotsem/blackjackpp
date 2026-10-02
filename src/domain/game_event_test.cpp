@@ -6,9 +6,7 @@ using namespace domain;
 
 TEST(GameEventTest, deal_initial_cards_emits_four_deal_events) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     auto events = game.poll_events();
     ASSERT_EQ(events.size(), 4);
@@ -27,9 +25,7 @@ TEST(GameEventTest, deal_initial_cards_emits_four_deal_events) {
 
 TEST(GameEventTest, deal_dealer_cards_emits_hole_card_revealed_event) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::DealerTurn);
     game.deal_dealer_cards();
@@ -47,9 +43,7 @@ TEST(GameEventTest, deal_dealer_cards_emits_hole_card_revealed_event) {
 
 TEST(GameEventTest, hit_emits_card_dealt_event) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
     game.hit();
@@ -67,9 +61,7 @@ TEST(GameEventTest, hit_emits_card_dealt_event) {
 
 TEST(GameEventTest, hit_emits_hand_busted_event_if_player_busts) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
 
@@ -91,9 +83,7 @@ TEST(GameEventTest, hit_emits_hand_busted_event_if_player_busts) {
 
 TEST(GameEventTest, finish_round_emits_round_over_event) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::DealerTurn);
     game.deal_dealer_cards();
@@ -113,9 +103,7 @@ TEST(GameEventTest, finish_round_emits_round_over_event) {
 
 TEST(GameEventTest, poll_events_drains_events) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     auto events1 = game.poll_events();
     EXPECT_FALSE(events1.empty());

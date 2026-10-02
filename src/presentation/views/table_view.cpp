@@ -2,7 +2,6 @@
 #include "domain/game.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
-#include <iostream>
 
 namespace presentation {
     SDL_AppResult TableView::handle_event(const SDL_Event& event) {
@@ -35,9 +34,9 @@ namespace presentation {
                         }
                     case SDLK_B:
                         if (game_->state() == domain::GameState::WaitingForBets) {
-                            game_->place_bet(10);
-                            game_->set_state(domain::GameState::Dealing);
-                            game_->deal_initial_cards();
+                            if (game_->can_place_bet(10)) {
+                                game_->start_round(10);
+                            }
                         }
                         break;
                     default:

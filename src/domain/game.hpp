@@ -116,15 +116,13 @@ namespace domain {
         void evaluate_hand(size_t hand_index);
         RoundSummary finish_round();
 
-        void place_bet(int amount) {
-            if (state_ != GameState::WaitingForBets) {
-                throw std::runtime_error("Cannot place bet at this time.");
+        void start_round(int bet) {
+            if (!can_place_bet(bet)) {
+                throw std::runtime_error("Cannot start round: invalid bet amount or game already in progress.");
             }
-            if (amount <= 0 || amount > player_.chips()) {
-                throw std::runtime_error("Invalid bet amount.");
-            }
-            player_.active_hand().bet = amount;
-            player_.remove_chips(amount);
+            place_bet(bet);
+            set_state(domain::GameState::Dealing);
+            deal_initial_cards();
         }
 
         void reset_game() {
@@ -172,6 +170,17 @@ namespace domain {
 
         void deal_card_to_player_current_hand() {
             deal_card_to_player_hand(player_.active_hand_index());
+        }
+
+        void place_bet(int amount) {
+            if (state_ != GameState::WaitingForBets) {
+                throw std::runtime_error("Cannot place bet at this time.");
+            }
+            if (amount <= 0 || amount > player_.chips()) {
+                throw std::runtime_error("Invalid bet amount.");
+            }
+            player_.active_hand().bet = amount;
+            player_.remove_chips(amount);
         }
 
         [[nodiscard]] int payout();

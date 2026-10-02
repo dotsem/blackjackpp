@@ -22,27 +22,36 @@ TEST(GameTest, total_bet_calculates_from_all_hands) {
     EXPECT_EQ(game.total_bet(), 200);
 }
 
-TEST(GameTest, place_bet_reduces_player_chips_and_sets_bet) {
-    Game game = test_helpers::create_game(1000);
-    game.place_bet(200);
-
+TEST(GameTest, start_round_initializes_game_state_and_deals_cards) {
+    // why: otherwise player will always get blackjack
+    std::vector<Card> cards = {
+        Card{ Suit::Spades, Rank::Ten },
+        Card{ Suit::Spades, Rank::Eight },
+        Card{ Suit::Hearts, Rank::Nine },
+        Card{ Suit::Hearts, Rank::Seven },
+    };
+    Game game = test_helpers::create_game_with_deck(std::move(cards), 1000);
+    game.start_round(200);
     EXPECT_EQ(game.player().active_hand().bet, 200);
     EXPECT_EQ(game.player().chips(), 800);
+    EXPECT_EQ(game.state(), GameState::PlayerTurn);
+    EXPECT_EQ(game.player().active_hand().hand.size(), 2);
+    EXPECT_EQ(game.dealer().hand().cards().size(), 2);
 }
 
-TEST(GameTest, place_bet_throws_for_invalid_amount) {
+TEST(GameTest, start_round_throws_for_invalid_amount) {
     Game game = test_helpers::create_game(1000);
 
-    EXPECT_THROW(game.place_bet(-100), std::runtime_error);
-    EXPECT_THROW(game.place_bet(0), std::runtime_error);
-    EXPECT_THROW(game.place_bet(2000), std::runtime_error);
+    EXPECT_THROW(game.start_round(-100), std::runtime_error);
+    EXPECT_THROW(game.start_round(0), std::runtime_error);
+    EXPECT_THROW(game.start_round(2000), std::runtime_error);
 }
 
-TEST(GameTest, place_bet_throws_if_not_waiting_for_bets) {
+TEST(GameTest, start_round_throws_if_not_waiting_for_bets) {
     Game game = test_helpers::create_game(1000);
     game.set_state(GameState::Dealing);
 
-    EXPECT_THROW(game.place_bet(100), std::runtime_error);
+    EXPECT_THROW(game.start_round(100), std::runtime_error);
 }
 
 TEST(GameTest, set_state_changes_game_state) {
@@ -50,21 +59,6 @@ TEST(GameTest, set_state_changes_game_state) {
     game.set_state(GameState::PlayerTurn);
 
     EXPECT_EQ(game.state(), GameState::PlayerTurn);
-}
-
-TEST(GameTest, deal_initial_cards_deals_two_cards_to_player_and_two_cards_to_dealer) {
-    Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
-
-    EXPECT_EQ(game.player().active_hand().hand.size(), 2);
-    EXPECT_FALSE(game.player().active_hand().hand.has_hidden_cards());
-    EXPECT_TRUE(game.dealer().hand().has_visible_cards());
-
-    EXPECT_EQ(game.dealer().hand().cards().size(), 2);
-    EXPECT_TRUE(game.dealer().hand().has_hidden_cards());
-    EXPECT_TRUE(game.dealer().hand().has_visible_cards());
 }
 
 TEST(GameTest, deal_initial_cards_throws_if_not_in_dealing_state) {
@@ -76,9 +70,7 @@ TEST(GameTest, deal_initial_cards_throws_if_not_in_dealing_state) {
 
 TEST(GameState, deal_dealer_cards_deals_until_17_or_higher) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::DealerTurn);
     game.deal_dealer_cards();
@@ -97,9 +89,7 @@ TEST(GameState, deal_dealer_cards_throws_if_not_in_dealer_turn_state) {
 
 TEST(GameState, hit_deals_card_to_player_and_advances_if_busted) {
     Game game = test_helpers::create_split_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
 
@@ -121,9 +111,7 @@ TEST(GameState, hit_throws_if_not_in_player_turn_state) {
 
 TEST(GameState, stand_sets_active_hand_stand_and_advances) {
     Game game = test_helpers::create_split_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
     game.stand();
@@ -141,9 +129,7 @@ TEST(GameState, stand_throws_if_not_in_player_turn_state) {
 
 TEST(GameState, double_down_doubles_bet_and_advances) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
     int initial_bet = game.player().active_hand().bet;
@@ -164,9 +150,7 @@ TEST(GameState, double_down_throws_if_not_in_player_turn_state) {
 
 TEST(GameState, double_down_throws_if_cannot_double_down) {
     Game game = test_helpers::create_game(100);
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
 
@@ -202,9 +186,7 @@ TEST(GameState, split_throws_if_not_in_player_turn_state) {
 
 TEST(GameState, split_throws_if_cannot_split) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
 
@@ -213,9 +195,7 @@ TEST(GameState, split_throws_if_cannot_split) {
 
 TEST(GameState, evaluate_hand_sets_outcome_for_busted_hand) {
     Game game = test_helpers::create_game();
-    game.place_bet(100);
-    game.set_state(GameState::Dealing);
-    game.deal_initial_cards();
+    game.start_round(100);
     game.set_state(GameState::PlayerTurn);
 
     while (!game.player().active_hand().hand.is_busted()) {
