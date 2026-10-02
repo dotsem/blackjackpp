@@ -29,8 +29,7 @@ namespace presentation {
                         break;
                     case SDLK_S:
                         if (game_->can_split()) {
-                            // TODO: disabled until UI is ready
-                            // game_->split();
+                            game_->split();
                         }
                         break;
                     case SDLK_B:

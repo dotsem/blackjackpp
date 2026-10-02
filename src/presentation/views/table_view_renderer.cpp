@@ -36,7 +36,28 @@ namespace presentation {
     }
 
     void TableView::render_player_hands() {
-        std::ignore = game_->player().hands();
+        // TODO: for now just focus on single hand, later add support for multiple hands
+        const auto& player_hands = game_->player().hands();
+        const auto active_hand_index = game_->player().active_hand_index();
+
+        const float active_card_step = card_sprites_.card_width() + 10.0F;
+        const float inactive_card_step = card_sprites_.card_width() / 2;
+
+        for (size_t hand_idx = 0; hand_idx < player_hands.size(); ++hand_idx) {
+            const auto& hand = player_hands.at(hand_idx).hand;
+            for (size_t i = 0; i < hand.cards().size(); ++i) {
+                const auto& dealt = hand.cards().at(i);
+
+                const float card_step = active_hand_index == hand_idx ? active_card_step : inactive_card_step;
+                const SDL_FPoint position{
+                    // TODO: actually position split cards in brackets
+                    .x = layout::BorderPadding + (static_cast<float>(i) * card_step),
+                    .y = layout::VirtualHeight - layout::BorderPadding - card_sprites_.card_height()
+                };
+
+                card_sprites_.render(renderer_, dealt.card, position);
+            }
+        }
     }
 
     void TableView::render_animations() {
