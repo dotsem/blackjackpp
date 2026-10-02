@@ -32,6 +32,7 @@ namespace presentation {
                             // TODO: disabled until UI is ready
                             // game_->split();
                         }
+                        break;
                     case SDLK_B:
                         if (game_->state() == domain::GameState::WaitingForBets) {
                             if (game_->can_place_bet(10)) {
