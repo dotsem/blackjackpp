@@ -1,5 +1,6 @@
 add_library(presentation STATIC
     views/table_view.cpp
+    views/table_view_renderer.cpp
     assets/texture_manager.cpp
 )
 
