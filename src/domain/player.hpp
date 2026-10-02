@@ -158,10 +158,12 @@ namespace domain {
             return active_hand_index_;
         }
 
-        void advance_to_next_hand() noexcept {
+        [[nodiscard]] bool advance_to_next_hand() noexcept {
             if (active_hand_index_ + 1 < hands_.size()) {
                 ++active_hand_index_;
+                return true;
             }
+            return false;
         }
 
         [[nodiscard]] bool all_hands_stands() const noexcept {

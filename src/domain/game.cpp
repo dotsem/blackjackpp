@@ -57,8 +57,10 @@ namespace domain {
 
         if (player_.active_hand().hand.is_busted()) {
             player_.set_outcome_for_current_hand(HandOutcome::Busted);
-            player_.advance_to_next_hand();
             events_.emplace_back(HandBustedEvent{});
+            if (!player_.advance_to_next_hand()) {
+                finish_round();
+            }
         }
     }
 
@@ -68,7 +70,11 @@ namespace domain {
         }
 
         player_.stand();
-        player_.advance_to_next_hand();
+        if (!player_.advance_to_next_hand()) {
+            set_state(GameState::DealerTurn);
+            deal_dealer_cards();
+            finish_round();
+        }
     }
 
     void Game::double_down() {
@@ -87,7 +93,11 @@ namespace domain {
         }
         player_.stand(); // After doubling down, the player automatically stands
 
-        player_.advance_to_next_hand();
+        if (!player_.advance_to_next_hand()) {
+            set_state(GameState::DealerTurn);
+            deal_dealer_cards();
+            finish_round();
+        }
     }
 
     void Game::split() {

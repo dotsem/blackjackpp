@@ -196,9 +196,9 @@ TEST(PlayerTest, advance_to_next_hand_does_not_wrap_around) {
     player.split();
 
     EXPECT_EQ(player.active_hand_index(), 0);
-    player.advance_to_next_hand();
+    EXPECT_TRUE(player.advance_to_next_hand());
     EXPECT_EQ(player.active_hand_index(), 1);
-    player.advance_to_next_hand();
+    EXPECT_FALSE(player.advance_to_next_hand());
     EXPECT_EQ(player.active_hand_index(), 1);
 }
 
