@@ -23,14 +23,6 @@ TEST(HandTest, reveal_all_sets_all_cards_face_up) {
     }
 }
 
-TEST(HandTest, clear_removes_all_cards) {
-    Hand hand;
-    Card card{ Suit::Hearts, Rank::Ace };
-    hand.add_card(card);
-    hand.clear();
-    EXPECT_EQ(hand.cards().size(), 0);
-}
-
 TEST(HandTest, pop_removes_and_returns_last_card) {
     Hand hand;
     Card card1{ Suit::Hearts, Rank::Ace };

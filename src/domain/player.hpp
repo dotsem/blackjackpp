@@ -34,6 +34,20 @@ namespace domain {
             hands_.reserve(4);
         }
 
+        [[nodiscard]] std::vector<Card> discard_hand() {
+            std::vector<Card> discarded_cards;
+
+            for (auto& hand : hands_) {
+                auto cards = hand.hand.discard();
+                discarded_cards.insert(discarded_cards.end(), cards.begin(), cards.end());
+            }
+            hands_.clear();
+            hands_.reserve(4);
+            hands_.emplace_back();
+            active_hand_index_ = 0;
+            return discarded_cards;
+        }
+
         void clear_hands() {
             hands_.clear();
             hands_.reserve(4);

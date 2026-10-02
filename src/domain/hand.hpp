@@ -23,8 +23,14 @@ namespace domain {
             }
         }
 
-        void clear() {
+        std::vector<Card> discard() {
+            std::vector<Card> discarded_cards;
+            discarded_cards.reserve(cards_.size());
+            for (const auto& card : cards_) {
+                discarded_cards.push_back(card.card);
+            }
             cards_.clear();
+            return discarded_cards;
         }
 
         [[nodiscard]] const std::vector<DealtCard>& cards() const noexcept {

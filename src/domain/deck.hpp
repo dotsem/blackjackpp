@@ -28,6 +28,7 @@ namespace domain {
 
         void reset() {
             cards_.clear();
+            discarded_cards_.clear();
             fill_deck();
         }
 
@@ -60,12 +61,35 @@ namespace domain {
             return cards_;
         }
 
+        [[nodiscard]] const std::vector<Card>& discarded_cards() const noexcept {
+            return discarded_cards_;
+        }
+
+        [[nodiscard]] int num_decks() const noexcept {
+            return num_decks_;
+        }
+
         [[nodiscard]] bool needs_reshuffle() const noexcept {
             return static_cast<float>(cards_.size()) / static_cast<float>(SingleDeckSize * num_decks_) < ReshuffleThreshold;
         }
 
+        void discard_cards(const std::vector<Card>& cards) {
+            discarded_cards_.insert(discarded_cards_.end(), cards.begin(), cards.end());
+        }
+
+        void discard_card(const Card& card) {
+            discarded_cards_.push_back(card);
+        }
+
+        void reshuffle_discarded_into_deck() {
+            cards_.insert(cards_.end(), discarded_cards_.begin(), discarded_cards_.end());
+            discarded_cards_.clear();
+            shuffle();
+        }
+
     private:
         std::vector<Card> cards_;
+        std::vector<Card> discarded_cards_;
         int num_decks_{ 1 };
         std::mt19937 rng_{ std::random_device{}() };
 

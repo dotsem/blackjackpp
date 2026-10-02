@@ -21,8 +21,12 @@ namespace domain {
             return hand_;
         }
 
+        [[nodiscard]] std::vector<Card> discard_hand() {
+            return hand_.discard();
+        }
+
         void clear_hand() {
-            hand_.clear();
+            hand_ = Hand{};
         }
 
     private:

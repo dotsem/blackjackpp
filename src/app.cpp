@@ -9,7 +9,7 @@
 #include <SDL3/SDL_video.h>
 
 App::App(std::string_view title, int width, int height)
-    : game_(domain::Game(domain::Player(), domain::Dealer(), domain::Deck()))
+    : game_(domain::Game(8, 1000))
     , window_(title, width, height, SDL_WINDOW_RESIZABLE)
     , renderer_(window_.get())
     , textures_(renderer_.get())

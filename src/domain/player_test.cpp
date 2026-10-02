@@ -31,6 +31,43 @@ TEST(PlayerTest, clear_hands_resets_hands_and_active_hand_index) {
     EXPECT_EQ(player.active_hand_index(), 0);
 }
 
+TEST(PlayerTest, discard_hand_removes_cards_and_resets_hands) {
+    Player player;
+    Card card1{ Suit::Hearts, Rank::Ace };
+    Card card2{ Suit::Diamonds, Rank::Ten };
+    player.add_card_to_current_hand(card1);
+    player.add_card_to_current_hand(card2);
+
+    auto discarded = player.discard_hand();
+
+    EXPECT_EQ(player.hands().size(), 1);
+    EXPECT_TRUE(player.active_hand().hand.is_empty());
+    EXPECT_EQ(player.active_hand_index(), 0);
+    ASSERT_EQ(discarded.size(), 2);
+    EXPECT_EQ(discarded[0], card1);
+    EXPECT_EQ(discarded[1], card2);
+}
+
+TEST(PlayerTest, discard_hand_collects_from_split_hands_and_resets_to_single_hand) {
+    Player player(1000);
+    Card card1{ Suit::Hearts, Rank::Eight };
+    Card card2{ Suit::Diamonds, Rank::Eight };
+    player.add_card_to_current_hand(card1);
+    player.add_card_to_current_hand(card2);
+    player.active_hand().bet = 100;
+    player.split();
+
+    Card card3{ Suit::Clubs, Rank::Two };
+    player.add_card_to_hand(card3, 0);
+
+    auto discarded = player.discard_hand();
+
+    EXPECT_EQ(player.hands().size(), 1);
+    EXPECT_TRUE(player.active_hand().hand.is_empty());
+    EXPECT_EQ(player.active_hand_index(), 0);
+    EXPECT_EQ(discarded.size(), 3);
+}
+
 TEST(PlayerTest, can_split_returns_true_for_valid_split) {
     Player player;
     Card card1{ Suit::Hearts, Rank::Eight };

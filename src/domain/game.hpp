@@ -39,6 +39,12 @@ namespace domain {
 
     class Game {
     public:
+        Game(int decks, int starting_chips)
+            : player_{ starting_chips }
+            , dealer_{}
+            , deck_{ decks, true } {
+        }
+
         Game(Player player, Dealer dealer, Deck deck)
             : player_(std::move(player))
             , dealer_(std::move(dealer))
@@ -120,9 +126,20 @@ namespace domain {
             if (!can_place_bet(bet)) {
                 throw std::runtime_error("Cannot start round: invalid bet amount or game already in progress.");
             }
+            discard_cards();
             place_bet(bet);
             set_state(domain::GameState::Dealing);
+
+            if (deck_.needs_reshuffle()) {
+                deck_.reshuffle_discarded_into_deck();
+            }
+
             deal_initial_cards();
+        }
+
+        void discard_cards() {
+            deck_.discard_cards(player_.discard_hand());
+            deck_.discard_cards(dealer_.discard_hand());
         }
 
         void reset_game() {
