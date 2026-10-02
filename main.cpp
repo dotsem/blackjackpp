@@ -1,11 +1,12 @@
 #include "SDL3/SDL_log.h"
 #include "app.hpp"
+#include "presentation/layout.hpp"
 #include <SDL3/SDL_main.h>
 #include <memory>
 
 SDL_AppResult SDL_AppInit(void** appstate, [[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     try {
-        auto app = std::make_unique<App>("Blackjack++", 1920, 1080);
+        auto app = std::make_unique<App>("Blackjack++", presentation::layout::VirtualWidth, presentation::layout::VirtualHeight);
         *appstate = app.release();
         return SDL_APP_CONTINUE;
     } catch (const std::exception& e) {
