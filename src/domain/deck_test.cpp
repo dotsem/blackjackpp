@@ -8,6 +8,11 @@ TEST(DeckTest, deck_has_52_cards) {
     EXPECT_EQ(deck.cards().size(), 52);
 }
 
+TEST(DeckTest, two_decks_have_104_cards) {
+    Deck deck{ 2 };
+    EXPECT_EQ(deck.cards().size(), 104);
+}
+
 TEST(DeckTest, draw_card_reduces_deck_size) {
     Deck deck;
     auto card_opt = deck.draw_card();
@@ -45,8 +50,8 @@ TEST(DeckTest, reset_restores_deck_to_52_cards) {
 }
 
 TEST(DeckTest, shuffle_changes_order_of_cards) {
-    Deck deck1;
-    Deck deck2;
+    Deck deck1{ 1, false };
+    Deck deck2{ 1, false };
 
     // Ensure both decks are in the same initial order
     EXPECT_EQ(deck1.cards(), deck2.cards());
@@ -60,9 +65,6 @@ TEST(DeckTest, shuffle_changes_order_of_cards) {
 TEST(DeckTest, shuffle_is_truly_random) {
     Deck deck1;
     Deck deck2;
-
-    deck1.shuffle();
-    deck2.shuffle();
 
     // The moment this test fails, i'm betting on the lottery
     bool are_equal = true;

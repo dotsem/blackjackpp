@@ -7,10 +7,10 @@
 namespace test_helpers {
 
     inline domain::Game create_game(int chips = 1000) {
-        domain::Player player(chips);
+        domain::Player player{ chips };
         domain::Dealer dealer;
-        domain::Deck deck;
-        domain::Game game(player, dealer, deck);
+        domain::Deck deck{ 1, false };
+        domain::Game game{ player, dealer, deck };
         return game;
     }
 
@@ -22,7 +22,7 @@ namespace test_helpers {
     }
 
     inline domain::Game create_split_game(int chips = 1000) {
-        domain::Player player(chips);
+        domain::Player player{ chips };
         domain::Card card1{ domain::Suit::Hearts, domain::Rank::Eight };
         domain::Card card2{ domain::Suit::Diamonds, domain::Rank::Eight };
         player.add_card_to_current_hand(card1);
@@ -31,8 +31,8 @@ namespace test_helpers {
         player.split();
 
         domain::Dealer dealer;
-        domain::Deck deck;
-        domain::Game game(player, dealer, deck);
+        domain::Deck deck{ 1, false };
+        domain::Game game{ player, dealer, deck };
         return game;
     }
 } // namespace test_helpers

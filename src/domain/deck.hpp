@@ -7,14 +7,19 @@
 #include <vector>
 
 namespace {
-    constexpr int DeckSize = 52;
+    constexpr int SingleDeckSize = 52;
+    constexpr float ReshuffleThreshold = 0.20F;
 }
 
 namespace domain {
     class Deck {
     public:
-        Deck() {
+        Deck(int num_decks = 1, bool shuffle_on_init = true)
+            : num_decks_(num_decks) {
             fill_deck();
+            if (shuffle_on_init) {
+                shuffle();
+            }
         }
 
         explicit Deck(std::vector<Card> cards)
@@ -55,15 +60,22 @@ namespace domain {
             return cards_;
         }
 
+        [[nodiscard]] bool needs_reshuffle() const noexcept {
+            return static_cast<float>(cards_.size()) / static_cast<float>(SingleDeckSize * num_decks_) < ReshuffleThreshold;
+        }
+
     private:
         std::vector<Card> cards_;
+        int num_decks_{ 1 };
         std::mt19937 rng_{ std::random_device{}() };
 
         void fill_deck() {
-            cards_.reserve(DeckSize);
-            for (int s = static_cast<int>(Suit::Diamonds); s <= static_cast<int>(Suit::Clubs); ++s) {
-                for (int r = static_cast<int>(Rank::Two); r <= static_cast<int>(Rank::Ace); ++r) {
-                    cards_.emplace_back(static_cast<Suit>(s), static_cast<Rank>(r));
+            cards_.reserve(static_cast<long>(SingleDeckSize * num_decks_));
+            for (int d = 0; d < num_decks_; ++d) {
+                for (int s = static_cast<int>(Suit::Diamonds); s <= static_cast<int>(Suit::Clubs); ++s) {
+                    for (int r = static_cast<int>(Rank::Two); r <= static_cast<int>(Rank::Ace); ++r) {
+                        cards_.emplace_back(static_cast<Suit>(s), static_cast<Rank>(r));
+                    }
                 }
             }
         }
