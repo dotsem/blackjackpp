@@ -9,12 +9,16 @@
 
 namespace presentation {
     class TableView : public View {
+
     public:
+        static constexpr float CARD_SCALE = 8.0F;
+
         TableView(SDL_Renderer* renderer, TextureManager& textures, domain::Game* game)
             : renderer_(renderer)
             , textures_(&textures)
             , game_(game)
             , card_sprites_(CardSpriteSheet::load(textures)) {
+            card_sprites_.set_scale(CARD_SCALE);
         }
 
         ~TableView() override = default;

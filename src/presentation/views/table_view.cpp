@@ -1,8 +1,11 @@
 #include "presentation/views/table_view.hpp"
 #include "domain/dealer.hpp"
 #include "domain/game.hpp"
+#include "presentation/layout.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
+#include <algorithm>
+#include <cstddef>
 
 namespace presentation {
     SDL_AppResult TableView::handle_event(const SDL_Event& event) {
@@ -66,31 +69,20 @@ namespace presentation {
             default:
                 break;
         }
+        SDL_RenderPresent(renderer_);
 
         return SDL_APP_CONTINUE;
     }
 
     void TableView::render_table_background() {
-        SDL_SetRenderDrawColor(renderer_, 0, 255, 0, SDL_ALPHA_OPAQUE);
+        // #0D4D24
+        SDL_SetRenderDrawColor(renderer_, 13, 77, 36, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(renderer_);
+        // TODO: add vignette effect and table felt texture
 
-        // test: draw all 52 cards in a 13x4 grid to test the sprite sheet
-        for (int suit_idx = 0; suit_idx < 4; ++suit_idx) {
-            for (int rank_val = 2; rank_val <= 14; ++rank_val) {
-                const domain::Card card(
-                    static_cast<domain::Suit>(suit_idx),
-                    static_cast<domain::Rank>(rank_val));
-
-                const float x = 20.0F + (static_cast<float>(rank_val - 2) * 55.0F);
-                const float y = 20.0F + (static_cast<float>(suit_idx) * 75.0F);
-
-                card_sprites_.render(renderer_, card, SDL_FRect{ .x = x, .y = y, .w = 48.0F * 3.0F, .h = 64.0F * 3.0F });
-            }
+        for (size_t i = 0; i < std::min(static_cast<size_t>(5), game_->deck().cards().size()); ++i) {
+            card_sprites_.render_back(renderer_, SDL_FPoint{ .x = layout::VirtualWidth - card_sprites_.card_width() - (static_cast<float>(i) * 2.0F * card_sprites_.scale()), .y = 120.0F });
         }
-
-        // Test card back
-        card_sprites_.render_back(renderer_, SDL_FRect{ .x = 20.0F, .y = 330.0F, .w = 48.0F * 3.0F, .h = 64.0F * 3.0F });
-        SDL_RenderPresent(renderer_);
     }
 
     void TableView::render_dealer_hand() {
