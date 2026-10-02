@@ -14,8 +14,6 @@ namespace presentation {
 
     class CardSpriteSheet {
     public:
-        static constexpr float DefaultScale = 3.0F;
-
         struct SheetConfig {
             float margin_x{ 11.0F };
             float margin_y{ 2.0F };
@@ -40,26 +38,43 @@ namespace presentation {
             build_lookup_table();
         }
 
-        void render(SDL_Renderer* renderer, const domain::Card& card, SDL_FRect dst) const {
+        void render(SDL_Renderer* renderer, const domain::Card& card, SDL_FPoint dst) const {
             const auto idx = card_index(card.suit(), card.rank(), config_.cols);
-            render_(renderer, idx, SDL_FPoint{ .x = dst.x, .y = dst.y }, dst.w / config_.card_w);
+            render_(renderer, idx, dst);
         }
 
-        void render_back(SDL_Renderer* renderer, SDL_FRect dst) const {
-            render_(renderer, CARD_BACK_IDX, SDL_FPoint{ .x = dst.x, .y = dst.y }, dst.w / config_.card_w);
+        void render_back(SDL_Renderer* renderer, SDL_FPoint dst) const {
+            render_(renderer, CARD_BACK_IDX, dst);
+        }
+
+        [[nodiscard]] float card_width() const noexcept {
+            return config_.card_w * scale_;
+        }
+
+        [[nodiscard]] float card_height() const noexcept {
+            return config_.card_h * scale_;
+        }
+
+        [[nodiscard]] float scale() const noexcept {
+            return scale_;
+        }
+
+        void set_scale(float scale) noexcept {
+            scale_ = scale;
         }
 
     private:
         SDL_Texture* texture_{ nullptr };
         SheetConfig config_;
+        float scale_{ 1.0F };
         std::array<SDL_FRect, 56> lut_{};
 
-        void render_(SDL_Renderer* renderer, int idx, SDL_FPoint position, float scale = DefaultScale) const {
+        void render_(SDL_Renderer* renderer, int idx, SDL_FPoint position) const {
             const SDL_FRect dst{
                 .x = position.x,
                 .y = position.y,
-                .w = 48.0F * scale,
-                .h = 64.0F * scale
+                .w = card_width(),
+                .h = card_height()
             };
             const SDL_FRect& src = lut_.at(idx);
             SDL_RenderTexture(renderer, texture_, &src, &dst);
