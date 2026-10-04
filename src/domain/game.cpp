@@ -149,13 +149,13 @@ namespace domain {
         }
     }
 
-    RoundSummary Game::finish_round() {
+    void Game::finish_round() {
         int bet_sum = total_bet();
         int win_sum = payout();
         player_.add_chips(win_sum);
         state_ = GameState::RoundOver;
         events_.emplace_back(RoundOverEvent{ .total_payout = win_sum });
-        return RoundSummary{ .total_bet = bet_sum, .total_payout = win_sum };
+        round_summary_ = RoundSummary{ .total_bet = bet_sum, .total_payout = win_sum };
     }
 
     /// Win pays 1:1

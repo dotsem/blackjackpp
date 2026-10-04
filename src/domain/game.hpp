@@ -120,7 +120,7 @@ namespace domain {
         void double_down();
         void split();
         void evaluate_hand(size_t hand_index);
-        RoundSummary finish_round();
+        void finish_round();
 
         void start_round(int bet) {
             if (!can_place_bet(bet)) {
@@ -156,11 +156,16 @@ namespace domain {
             return drained;
         }
 
+        [[nodiscard]] const RoundSummary& round_summary() const noexcept {
+            return round_summary_;
+        }
+
     private:
         Player player_;
         Dealer dealer_;
         Deck deck_;
         GameState state_{ GameState::WaitingForBets };
+        RoundSummary round_summary_{};
         std::optional<GameResult> result_{ std::nullopt };
 
         void deal_card_to_dealer(bool is_face_up = true) {

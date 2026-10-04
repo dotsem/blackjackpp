@@ -117,7 +117,9 @@ TEST(GameTest, finish_round_calculates_payout_and_retains_cards_on_table) {
     game.set_state(GameState::DealerTurn);
     game.evaluate_hand(0);
 
-    RoundSummary summary = game.finish_round();
+    game.finish_round();
+
+    RoundSummary summary = game.round_summary();
 
     EXPECT_EQ(summary.total_bet, 100);
     EXPECT_EQ(summary.total_payout, 200);
