@@ -25,6 +25,8 @@ namespace domain {
 
         if (player_.active_hand().hand.is_blackjack()) {
             set_state(GameState::DealerTurn);
+            deal_dealer_cards();
+            finish_round();
         } else {
             set_state(GameState::PlayerTurn);
         }
