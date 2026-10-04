@@ -86,7 +86,7 @@ namespace presentation {
             return (s_idx * cols) + r_idx;
         }
 
-        /// Last row isn't really used as it contains jokers & the card backs
+        /// Last column isn't really used as it contains jokers & the card backs
         /// It is just there to render the card back
         void build_lookup_table() noexcept {
             const auto cols = static_cast<size_t>(config_.cols);
