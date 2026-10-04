@@ -10,12 +10,14 @@ namespace {
 namespace domain {
     //! keep this order, as the spritesheet depends on it
     enum class Suit : std::uint8_t {
+        Hearts = 0,
         Diamonds,
-        Spades,
-        Hearts,
         Clubs,
+        Spades,
+        Count, // not a real suit, used for iteration
     };
     enum class Rank : std::uint8_t {
+        Ace = 1,
         Two = 2,
         Three = 3,
         Four = 4,
@@ -28,7 +30,7 @@ namespace domain {
         Jack = 11,
         Queen = 12,
         King = 13,
-        Ace = 14
+        Count = 14, // not a real rank, used for iteration
     };
 
     class Card {

@@ -96,8 +96,8 @@ namespace domain {
         void fill_deck() {
             cards_.reserve(static_cast<long>(SingleDeckSize * num_decks_));
             for (int d = 0; d < num_decks_; ++d) {
-                for (int s = static_cast<int>(Suit::Diamonds); s <= static_cast<int>(Suit::Clubs); ++s) {
-                    for (int r = static_cast<int>(Rank::Two); r <= static_cast<int>(Rank::Ace); ++r) {
+                for (int s = 0; s < static_cast<int>(Suit::Count); ++s) {
+                    for (int r = static_cast<int>(Rank::Ace); r < static_cast<int>(Rank::Count); ++r) {
                         cards_.emplace_back(static_cast<Suit>(s), static_cast<Rank>(r));
                     }
                 }

@@ -81,7 +81,7 @@ namespace presentation {
         }
 
         static constexpr int card_index(domain::Suit suit, domain::Rank rank, int cols) noexcept {
-            const auto r_idx = static_cast<int>(rank) - 2; // rank starts at 2
+            const auto r_idx = static_cast<int>(rank) - 1; // ace rank starts at 1
             const auto s_idx = static_cast<int>(suit);
             return (s_idx * cols) + r_idx;
         }
