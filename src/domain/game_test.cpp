@@ -160,7 +160,6 @@ TEST(GameTest, reset_game_resets_hands_state_and_deck_discards) {
     game.reset_game();
 
     EXPECT_EQ(game.state(), GameState::WaitingForBets);
-    EXPECT_FALSE(game.result().has_value());
     EXPECT_TRUE(game.player().active_hand().hand.is_empty());
     EXPECT_TRUE(game.dealer().hand().cards().empty());
     EXPECT_EQ(game.deck().cards().size(), 52);

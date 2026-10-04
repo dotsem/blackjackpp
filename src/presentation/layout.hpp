@@ -7,4 +7,12 @@ namespace presentation::layout {
     inline constexpr float TableCenterX = VirtualWidth / 2.0F;
     inline constexpr float TableCenterY = VirtualHeight / 2.0F;
     inline constexpr float BorderPadding = 20.0F;
+
+    constexpr float centerX(float width) noexcept {
+        return TableCenterX - (width / 2.0F);
+    }
+
+    constexpr float centerY(float height) noexcept {
+        return TableCenterY - (height / 2.0F);
+    }
 }

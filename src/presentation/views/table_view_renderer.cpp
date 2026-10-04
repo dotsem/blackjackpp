@@ -1,5 +1,21 @@
+#include "SDL3/SDL_render.h"
 #include "presentation/layout.hpp"
 #include "table_view.hpp"
+#include <format>
+#include <string>
+
+void centered_text(SDL_Renderer* renderer, const std::string& text, float scale) {
+    constexpr float char_size = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE;
+    const float text_w = static_cast<float>(text.length()) * char_size * scale;
+    const float text_h = char_size * scale;
+    const float draw_x = presentation::layout::centerX(text_w) / scale;
+    const float draw_y = presentation::layout::centerY(text_h) / scale;
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderScale(renderer, scale, scale);
+    SDL_RenderDebugText(renderer, draw_x, draw_y, text.c_str());
+    SDL_SetRenderScale(renderer, 1.0F, 1.0F);
+}
 
 namespace presentation {
     void TableView::render_table_background() {
@@ -64,14 +80,15 @@ namespace presentation {
     }
 
     void TableView::render_betting_hud() {
-        std::ignore = game_->state();
+        centered_text(renderer_, std::format("Chips: {}", game_->player().chips()), 4.0F);
     }
 
     void TableView::render_action_buttons() {
-        std::ignore = game_->state();
+        centered_text(renderer_, "Hit or Stand", 4.0F);
     }
 
     void TableView::render_round_summary_overlay() {
         std::ignore = game_->state();
+        centered_text(renderer_, std::format("{}", game_->player().active_hand().outcome_to_string()), 4.0F);
     }
 }

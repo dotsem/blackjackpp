@@ -75,10 +75,6 @@ namespace domain {
             state_ = new_state;
         }
 
-        [[nodiscard]] const std::optional<GameResult>& result() const noexcept {
-            return result_;
-        }
-
         [[nodiscard]] const Player& player() const noexcept {
             return player_;
         }
@@ -147,7 +143,7 @@ namespace domain {
             dealer_.clear_hand();
             deck_.reset();
             state_ = GameState::WaitingForBets;
-            result_ = std::nullopt;
+            round_summary_ = RoundSummary{};
         }
 
         [[nodiscard]] std::vector<GameEvent> poll_events() {
@@ -166,7 +162,6 @@ namespace domain {
         Deck deck_;
         GameState state_{ GameState::WaitingForBets };
         RoundSummary round_summary_{};
-        std::optional<GameResult> result_{ std::nullopt };
 
         void deal_card_to_dealer(bool is_face_up = true) {
             auto card_opt = deck_.draw_card();

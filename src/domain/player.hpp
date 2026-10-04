@@ -25,6 +25,24 @@ namespace domain {
         bool stand{ false };
         bool is_from_split{ false };
         HandOutcome outcome{ HandOutcome::Pending };
+
+        [[nodiscard]] constexpr std::string_view outcome_to_string() const noexcept {
+            switch (outcome) {
+                case HandOutcome::Pending:
+                    return "Pending";
+                case HandOutcome::Busted:
+                    return "Busted";
+                case HandOutcome::Won:
+                    return "Won";
+                case HandOutcome::Lost:
+                    return "Lost";
+                case HandOutcome::Push:
+                    return "Push";
+                case HandOutcome::Blackjack:
+                    return "Blackjack";
+            }
+            return "Unknown";
+        }
     };
 
     class Player {
