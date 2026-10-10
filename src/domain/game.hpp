@@ -138,12 +138,22 @@ namespace domain {
             deck_.discard_cards(dealer_.discard_hand());
         }
 
+        /// Do not use this method to go to a next round, use next_round() instead.
         void reset_game() {
             player_.clear_hands();
             dealer_.clear_hand();
             deck_.reset();
             state_ = GameState::WaitingForBets;
             round_summary_ = RoundSummary{};
+        }
+
+        void next_round() {
+            if (state_ != GameState::RoundOver) {
+                throw std::runtime_error("Cannot start a new round until the current round is over.");
+            }
+            discard_cards();
+            round_summary_ = RoundSummary{};
+            set_state(GameState::WaitingForBets);
         }
 
         [[nodiscard]] std::vector<GameEvent> poll_events() {

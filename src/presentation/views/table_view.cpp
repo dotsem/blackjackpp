@@ -20,6 +20,8 @@ namespace presentation {
                     case SDLK_RETURN:
                         if (game_->can_stand()) {
                             game_->stand();
+                        } else if (game_->state() == domain::GameState::RoundOver) {
+                            game_->next_round();
                         }
                         break;
                     case SDLK_D:

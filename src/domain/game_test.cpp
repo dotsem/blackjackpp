@@ -165,3 +165,22 @@ TEST(GameTest, reset_game_resets_hands_state_and_deck_discards) {
     EXPECT_EQ(game.deck().cards().size(), 52);
     EXPECT_EQ(game.deck().discarded_cards().size(), 0);
 }
+
+TEST(GameTest, next_round_discards_table_cards_and_resets_state) {
+    Player player;
+    player.add_card_to_current_hand({ Suit::Hearts, Rank::Ten });
+    player.active_hand().bet = 100;
+
+    Dealer dealer;
+    dealer.add_upcard({ Suit::Spades, Rank::Ten });
+
+    Game game(player, dealer, Deck{});
+    game.set_state(GameState::RoundOver);
+
+    game.next_round();
+
+    EXPECT_EQ(game.state(), GameState::WaitingForBets);
+    EXPECT_TRUE(game.player().active_hand().hand.is_empty());
+    EXPECT_TRUE(game.dealer().hand().cards().empty());
+    EXPECT_EQ(game.deck().discarded_cards().size(), 2);
+}

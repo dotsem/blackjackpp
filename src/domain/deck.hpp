@@ -30,6 +30,7 @@ namespace domain {
             cards_.clear();
             discarded_cards_.clear();
             fill_deck();
+            shuffle();
         }
 
         [[nodiscard]] std::optional<Card> draw_card() {
