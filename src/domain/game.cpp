@@ -138,12 +138,20 @@ namespace domain {
 
         bool is_natural_bj = player_hand.is_blackjack() && !player_.hands().at(hand_index).is_from_split;
 
-        if (is_natural_bj && !dealer_hand.is_blackjack()) {
+        if (dealer_hand.is_blackjack()) {
+            player_.set_outcome_for_hand(is_natural_bj ? HandOutcome::Push : HandOutcome::Lost, hand_index);
+            return;
+        }
+
+        if (is_natural_bj) {
             player_.set_outcome_for_hand(HandOutcome::Blackjack, hand_index);
-        } else if ((player_hand.value() < dealer_hand.value()) || (!player_hand.is_blackjack() && dealer_hand.is_blackjack())) {
-            player_.set_outcome_for_hand(HandOutcome::Lost, hand_index);
-        } else if (dealer_hand.is_busted() || (player_hand.value() > dealer_hand.value())) {
+            return;
+        }
+
+        if (dealer_hand.is_busted() || (player_hand.value() > dealer_hand.value())) {
             player_.set_outcome_for_hand(HandOutcome::Won, hand_index);
+        } else if (player_hand.value() < dealer_hand.value()) {
+            player_.set_outcome_for_hand(HandOutcome::Lost, hand_index);
         } else {
             player_.set_outcome_for_hand(HandOutcome::Push, hand_index);
         }
