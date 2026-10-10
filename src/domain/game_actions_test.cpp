@@ -29,7 +29,6 @@ TEST(GameState, deal_dealer_cards_throws_if_not_in_dealer_turn_state) {
 
 TEST(GameState, hit_deals_card_to_player_and_advances_if_busted) {
     Game game = test_helpers::create_split_game();
-    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
 
@@ -51,7 +50,6 @@ TEST(GameState, hit_throws_if_not_in_player_turn_state) {
 
 TEST(GameState, stand_sets_active_hand_stand_and_advances) {
     Game game = test_helpers::create_split_game();
-    game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
     game.stand();
@@ -125,7 +123,7 @@ TEST(GameState, split_throws_if_not_in_player_turn_state) {
 }
 
 TEST(GameState, split_throws_if_cannot_split) {
-    Game game = test_helpers::create_game();
+    Game game = test_helpers::create_game(150);
     game.start_round(100);
 
     game.set_state(GameState::PlayerTurn);
