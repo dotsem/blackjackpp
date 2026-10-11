@@ -51,7 +51,7 @@ namespace presentation {
             }
         }
 
-        if (dealer_cards.size() > 0) {
+        if (!dealer_cards.empty()) {
             dealer_score_label_.set_text(std::format("{}", game_->dealer().hand().value(true)));
             dealer_score_label_.render(layout::BorderPadding, card_y + card_sprites_.card_height() + 10.0F);
         }
@@ -81,7 +81,7 @@ namespace presentation {
 
                 card_sprites_.render(renderer_, dealt.card, position);
             }
-            if (hand.size() > 0) {
+            if (!hand.cards().empty()) {
                 player_score_label_.set_text(std::format("{}", hand.value(true)));
                 // TODO: also render this above the cards when there are multiple hands
                 player_score_label_.render(layout::BorderPadding, card_y - player_score_label_.height() - 10.0F);
