@@ -4,6 +4,7 @@
 #include "SDL_fur_coat/renderer.hpp"
 #include "SDL_fur_coat/window.hpp"
 #include "domain/game.hpp"
+#include "presentation/assets/font_manager.hpp"
 #include "presentation/assets/texture_manager.hpp"
 #include "presentation/views/view.hpp"
 
@@ -28,6 +29,7 @@ private:
     sdl::Window window_;
     sdl::Renderer renderer_;
     presentation::TextureManager textures_;
+    presentation::FontManager fonts_;
     presentation::View* current_view_{ nullptr };
     uint64_t last_ticks_{ 0 };
     bool is_running_{ true };

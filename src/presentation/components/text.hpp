@@ -8,9 +8,9 @@
 namespace presentation {
     class Text {
     public:
-        Text(SDL_Renderer* renderer, sdl::Font* font, std::string text, SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 })
+        Text(SDL_Renderer* renderer, const sdl::Font& font, std::string text, SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 })
             : renderer_(renderer)
-            , font_(font)
+            , font_(&font)
             , color_(color) {
             set_text(std::move(text));
         }
@@ -57,7 +57,7 @@ namespace presentation {
             return color_;
         }
 
-        [[nodiscard]] sdl::Font* font() const noexcept {
+        [[nodiscard]] const sdl::Font* font() const noexcept {
             return font_;
         }
 
@@ -107,7 +107,7 @@ namespace presentation {
 
     private:
         SDL_Renderer* renderer_;
-        sdl::Font* font_;
+        const sdl::Font* font_;
         SDL_Color color_;
         std::string text_;
         sdl::Texture texture_;

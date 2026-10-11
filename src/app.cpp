@@ -13,7 +13,8 @@ App::App(std::string_view title, int width, int height)
     , window_(title, width, height, SDL_WINDOW_RESIZABLE)
     , renderer_(window_.get())
     , textures_(renderer_.get())
-    , current_view_(new presentation::TableView(renderer_.get(), textures_, &game_))
+    , fonts_("assets/fonts/kenney-high-square.ttf")
+    , current_view_(new presentation::TableView(renderer_.get(), textures_, fonts_, &game_))
     , last_ticks_(SDL_GetTicksNS()) {
     SDL_SetRenderLogicalPresentation(renderer_.get(), width, height, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 }

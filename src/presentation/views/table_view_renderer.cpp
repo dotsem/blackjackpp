@@ -35,12 +35,13 @@ namespace presentation {
         const auto& dealer_cards = game_->dealer().hand().cards();
         const float card_step = card_sprites_.card_width() + 10.0F;
 
+        const float card_y = layout::BorderPadding;
         for (size_t i = 0; i < dealer_cards.size(); ++i) {
             const auto& dealt = dealer_cards.at(i);
 
             const SDL_FPoint position{
                 .x = layout::BorderPadding + (static_cast<float>(i) * card_step),
-                .y = layout::BorderPadding
+                .y = card_y
             };
 
             if (!dealt.is_face_up) {
@@ -48,6 +49,11 @@ namespace presentation {
             } else {
                 card_sprites_.render(renderer_, dealt.card, position);
             }
+        }
+
+        if (dealer_cards.size() > 0) {
+            dealer_score_label_.set_text(std::format("{}", game_->dealer().hand().value(true)));
+            dealer_score_label_.render(layout::BorderPadding, card_y + card_sprites_.card_height() + 10.0F);
         }
     }
 
@@ -59,6 +65,8 @@ namespace presentation {
         const float active_card_step = card_sprites_.card_width() + 10.0F;
         const float inactive_card_step = card_sprites_.card_width() / 2;
 
+        const float card_y = layout::VirtualHeight - layout::BorderPadding - card_sprites_.card_height();
+
         for (size_t hand_idx = 0; hand_idx < player_hands.size(); ++hand_idx) {
             const auto& hand = player_hands.at(hand_idx).hand;
             for (size_t i = 0; i < hand.cards().size(); ++i) {
@@ -68,10 +76,15 @@ namespace presentation {
                 const SDL_FPoint position{
                     // TODO: actually position split cards in brackets
                     .x = layout::BorderPadding + (static_cast<float>(i) * card_step),
-                    .y = layout::VirtualHeight - layout::BorderPadding - card_sprites_.card_height()
+                    .y = card_y
                 };
 
                 card_sprites_.render(renderer_, dealt.card, position);
+            }
+            if (hand.size() > 0) {
+                player_score_label_.set_text(std::format("{}", hand.value(true)));
+                // TODO: also render this above the cards when there are multiple hands
+                player_score_label_.render(layout::BorderPadding, card_y - player_score_label_.height() - 10.0F);
             }
         }
     }
@@ -80,15 +93,17 @@ namespace presentation {
     }
 
     void TableView::render_betting_hud() {
-        centered_text(renderer_, std::format("Chips: {}", game_->player().chips()), 4.0F);
+        action_prompt_label_.set_text(std::format("Chips: {}", game_->player().chips()));
+        action_prompt_label_.render_centered(layout::TableCenterX, layout::TableCenterY);
     }
 
     void TableView::render_action_buttons() {
-        centered_text(renderer_, "Hit or Stand", 4.0F);
+        action_prompt_label_.set_text("Hit (SPACE) Or Stand (ENTER)");
+        action_prompt_label_.render_centered(layout::TableCenterX, layout::TableCenterY);
     }
 
     void TableView::render_round_summary_overlay() {
-        std::ignore = game_->state();
-        centered_text(renderer_, std::format("{}", game_->player().active_hand().outcome_to_string()), 4.0F);
+        action_prompt_label_.set_text(std::format("{}", game_->player().active_hand().outcome_to_string()));
+        action_prompt_label_.render_centered(layout::TableCenterX, layout::TableCenterY);
     }
 }
