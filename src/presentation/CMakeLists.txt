@@ -2,7 +2,8 @@ add_library(presentation STATIC
     views/table_view.cpp
     views/table_view_renderer.cpp
     assets/texture_manager.cpp
+    components/text.cpp
 )
 
 target_include_directories(presentation PUBLIC ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(presentation PUBLIC domain SDL3::SDL3)
+target_link_libraries(presentation PUBLIC domain SDL3::SDL3 SDL3_ttf::SDL3_ttf)
