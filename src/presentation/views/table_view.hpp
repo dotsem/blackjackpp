@@ -4,7 +4,7 @@
 #include "presentation/assets/card_sprite_sheet.hpp"
 #include "presentation/assets/font_manager.hpp"
 #include "presentation/assets/texture_manager.hpp"
-#include "presentation/components/text.hpp"
+#include "presentation/components/text/text.hpp"
 #include "view.hpp"
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>

@@ -8,8 +8,8 @@ void centered_text(SDL_Renderer* renderer, const std::string& text, float scale)
     constexpr float char_size = SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE;
     const float text_w = static_cast<float>(text.length()) * char_size * scale;
     const float text_h = char_size * scale;
-    const float draw_x = presentation::layout::centerX(text_w) / scale;
-    const float draw_y = presentation::layout::centerY(text_h) / scale;
+    const float draw_x = presentation::layout::centerXInWindow(text_w) / scale;
+    const float draw_y = presentation::layout::centerYInWindow(text_h) / scale;
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_SetRenderScale(renderer, scale, scale);
@@ -94,16 +94,16 @@ namespace presentation {
 
     void TableView::render_betting_hud() {
         action_prompt_label_.set_text(std::format("Chips: {}", game_->player().chips()));
-        action_prompt_label_.render_centered(layout::TableCenterX, layout::TableCenterY);
+        action_prompt_label_.render(layout::TableCenterX, layout::TableCenterY, layout::Anchor::Center);
     }
 
     void TableView::render_action_buttons() {
         action_prompt_label_.set_text("Hit (SPACE) Or Stand (ENTER)");
-        action_prompt_label_.render_centered(layout::TableCenterX, layout::TableCenterY);
+        action_prompt_label_.render(layout::TableCenterX, layout::TableCenterY, layout::Anchor::Center);
     }
 
     void TableView::render_round_summary_overlay() {
         action_prompt_label_.set_text(std::format("{}", game_->player().active_hand().outcome_to_string()));
-        action_prompt_label_.render_centered(layout::TableCenterX, layout::TableCenterY);
+        action_prompt_label_.render(layout::TableCenterX, layout::TableCenterY, layout::Anchor::Center);
     }
 }

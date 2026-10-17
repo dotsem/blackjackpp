@@ -2,7 +2,7 @@ add_library(presentation STATIC
     views/table_view.cpp
     views/table_view_renderer.cpp
     assets/texture_manager.cpp
-    components/text.cpp
+    components/text/text.cpp
 )
 
 target_include_directories(presentation PUBLIC ${CMAKE_SOURCE_DIR}/src)

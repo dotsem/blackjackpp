@@ -1,4 +1,4 @@
-#include "presentation/components/text.hpp"
+#include "presentation/components/text/text.hpp"
 #include "SDL3/SDL_error.h"
 #include "SDL_fur_coat/surface.hpp"
 #include <stdexcept>

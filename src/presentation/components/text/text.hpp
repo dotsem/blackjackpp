@@ -3,6 +3,8 @@
 #include "SDL3/SDL_render.h"
 #include "SDL_fur_coat/font.hpp"
 #include "SDL_fur_coat/texture.hpp"
+#include "presentation/components/animations/animations.hpp"
+#include "presentation/layout.hpp"
 #include <string>
 
 namespace presentation {
@@ -24,29 +26,34 @@ namespace presentation {
             rebuild_texture();
         }
 
-        void render(float x, float y) {
+        void render(float x, float y, layout::Anchor anchor = layout::Anchor::None) const {
             if (!texture_) {
                 return;
             }
 
-            SDL_FRect dst{ .x = x, .y = y, .w = texture_.width(), .h = texture_.height() };
+            const auto anchor_pos = layout::anchor(x, y, texture_.width(), texture_.height(), anchor);
+            SDL_FRect dst{ .x = anchor_pos.x, .y = anchor_pos.y, .w = texture_.width(), .h = texture_.height() };
             SDL_RenderTexture(renderer_, texture_.get(), nullptr, &dst);
         }
 
-        void render_centered(float center_x, float center_y) {
-            render(center_x - (texture_.width() / 2.0F), center_y - (texture_.height() / 2.0F));
+        void render(float x, float y, const Transform2D& t, layout::Anchor anchor = layout::Anchor::None) const {
+            if (!texture_) {
+                return;
+            }
+            const float w = texture_.width() * t.scale;
+            const float h = texture_.height() * t.scale;
+            const auto pos = layout::anchor(x + t.x, y + t.y, w, h, anchor);
+            const SDL_FRect dst{ .x = pos.x, .y = pos.y, .w = w, .h = h };
+            SDL_SetTextureAlphaMod(texture_.get(), t.alpha);
+            SDL_RenderTextureRotated(renderer_, texture_.get(), nullptr, &dst, t.angle, nullptr, SDL_FLIP_NONE);
         }
 
-        void render_centered_horizontally(float center_x, float y) {
-            render(center_x - (texture_.width() / 2.0F), y);
+        void render(const SDL_FRect& rect, layout::Anchor anchor = layout::Anchor::Center) const {
+            render(rect.x + (rect.w / 2.0F), rect.y + (rect.h / 2.0F), anchor);
         }
 
-        void render_centered_vertically(float x, float center_y) {
-            render(x, center_y - (texture_.height() / 2.0F));
-        }
-
-        void render_centered_in_rect(const SDL_FRect& rect) {
-            render(rect.x + (rect.w / 2.0F) - (texture_.width() / 2.0F), rect.y + (rect.h / 2.0F) - (texture_.height() / 2.0F));
+        void render(const SDL_FRect& rect, const Transform2D& t, layout::Anchor anchor = layout::Anchor::Center) const {
+            render(rect.x + (rect.w / 2.0F), rect.y + (rect.h / 2.0F), t, anchor);
         }
 
         [[nodiscard]] const std::string& text() const noexcept {
