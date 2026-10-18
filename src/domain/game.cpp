@@ -37,6 +37,7 @@ namespace domain {
             throw std::runtime_error("Cannot deal dealer cards at this time.");
         }
 
+        events_.emplace_back(DealerTurnStartedEvent{});
         dealer_.reveal_hole_card();
         events_.emplace_back(HoleCardRevealedEvent{ dealer_.hand().cards().at(1).card });
 
@@ -59,9 +60,14 @@ namespace domain {
 
         if (player_.active_hand().hand.is_busted()) {
             player_.set_outcome_for_current_hand(HandOutcome::Busted);
-            events_.emplace_back(HandBustedEvent{});
+            size_t prev_index = player_.active_hand_index();
+            events_.emplace_back(HandBustedEvent{ .hand_index = prev_index });
             if (!player_.advance_to_next_hand()) {
                 finish_round();
+            } else {
+                events_.emplace_back(ActiveHandChangedEvent{
+                    .previous_hand_index = prev_index,
+                    .current_hand_index = player_.active_hand_index() });
             }
         }
     }
@@ -71,11 +77,17 @@ namespace domain {
             throw std::runtime_error("Cannot stand at this time.");
         }
 
+        size_t prev_index = player_.active_hand_index();
+        events_.emplace_back(HandStoodEvent{ .hand_index = prev_index });
         player_.stand();
         if (!player_.advance_to_next_hand()) {
             set_state(GameState::DealerTurn);
             deal_dealer_cards();
             finish_round();
+        } else {
+            events_.emplace_back(ActiveHandChangedEvent{
+                .previous_hand_index = prev_index,
+                .current_hand_index = player_.active_hand_index() });
         }
     }
 
@@ -84,21 +96,36 @@ namespace domain {
             throw std::runtime_error("Cannot double down at this time.");
         }
 
+        size_t hand_idx = player_.active_hand_index();
+        int added_bet = player_.active_hand().bet;
+
         if (!player_.double_down()) {
             throw std::runtime_error("Cannot double down due to insufficient chips or invalid hand.");
         }
+
+        events_.emplace_back(HandDoubledDownEvent{
+            .hand_index = hand_idx,
+            .added_bet = added_bet,
+            .total_hand_bet = player_.active_hand().bet,
+            .remaining_chips = player_.chips() });
 
         deal_card_to_player_current_hand();
 
         if (player_.active_hand().hand.is_busted()) {
             player_.set_outcome_for_current_hand(HandOutcome::Busted);
+            events_.emplace_back(HandBustedEvent{ .hand_index = hand_idx });
         }
+        events_.emplace_back(HandStoodEvent{ .hand_index = hand_idx });
         player_.stand(); // After doubling down, the player automatically stands
 
         if (!player_.advance_to_next_hand()) {
             set_state(GameState::DealerTurn);
             deal_dealer_cards();
             finish_round();
+        } else {
+            events_.emplace_back(ActiveHandChangedEvent{
+                .previous_hand_index = hand_idx,
+                .current_hand_index = player_.active_hand_index() });
         }
     }
 
@@ -111,13 +138,18 @@ namespace domain {
             throw std::runtime_error("Cannot split the current hand.");
         }
 
+        size_t src_hand_idx = player_.active_hand_index();
+        int split_bet = player_.active_hand().bet;
+
         player_.split();
 
-        size_t new_hand_idx = player_.active_hand_index() + 1;
+        size_t new_hand_idx = player_.hands().size() - 1;
 
-        if (player_.hands().size() <= new_hand_idx) {
-            throw std::runtime_error("New hand index is out of bounds after split.");
-        }
+        events_.emplace_back(HandSplitEvent{
+            .source_hand_index = src_hand_idx,
+            .new_hand_index = new_hand_idx,
+            .split_bet = split_bet,
+            .remaining_chips = player_.chips() });
 
         deal_card_to_player_current_hand();
         deal_card_to_player_hand(new_hand_idx);
@@ -161,9 +193,12 @@ namespace domain {
         int bet_sum = total_bet();
         int win_sum = payout();
         player_.add_chips(win_sum);
-        state_ = GameState::RoundOver;
-        events_.emplace_back(RoundOverEvent{ .total_payout = win_sum });
         round_summary_ = RoundSummary{ .total_bet = bet_sum, .total_payout = win_sum };
+        set_state(GameState::RoundOver);
+        events_.emplace_back(RoundOverEvent{
+            .total_payout = win_sum,
+            .final_chips = player_.chips(),
+            .summary = round_summary_.is_profit() ? "Profit" : (win_sum == bet_sum ? "Push" : "Loss") });
     }
 
     /// Win pays 1:1

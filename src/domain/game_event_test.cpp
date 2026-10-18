@@ -9,16 +9,19 @@ TEST(GameEventTest, deal_initial_cards_emits_four_deal_events) {
     game.start_round(100);
 
     auto events = game.poll_events();
-    ASSERT_EQ(events.size(), 4);
+    std::vector<CardDealtEvent> deal_events;
+    for (const auto& ev : events) {
+        if (const auto* d = std::get_if<CardDealtEvent>(&ev)) {
+            deal_events.push_back(*d);
+        }
+    }
+    ASSERT_EQ(deal_events.size(), 4);
 
-    ASSERT_TRUE(std::holds_alternative<CardDealtEvent>(events[0]));
-    const auto& e0 = std::get<CardDealtEvent>(events[0]);
-    EXPECT_FALSE(e0.is_dealer);
-    EXPECT_TRUE(e0.is_face_up);
+    EXPECT_FALSE(deal_events[0].is_dealer);
+    EXPECT_TRUE(deal_events[0].is_face_up);
 
-    const auto& e3 = std::get<CardDealtEvent>(events[3]);
-    EXPECT_TRUE(e3.is_dealer);
-    EXPECT_FALSE(e3.is_face_up);
+    EXPECT_TRUE(deal_events[3].is_dealer);
+    EXPECT_FALSE(deal_events[3].is_face_up);
 
     EXPECT_TRUE(game.poll_events().empty());
 }
@@ -116,4 +119,65 @@ TEST(GameEventTest, poll_events_returns_empty_vector_if_no_events) {
     Game game = test_helpers::create_game();
     auto events = game.poll_events();
     EXPECT_TRUE(events.empty());
+}
+
+TEST(GameEventTest, start_round_emits_bet_placed_and_round_started_events) {
+    Game game = test_helpers::create_game();
+    game.start_round(50);
+
+    auto events = game.poll_events();
+    bool bet_placed_found = false;
+    bool round_started_found = false;
+
+    for (const auto& event : events) {
+        if (const auto* bp = std::get_if<BetPlacedEvent>(&event)) {
+            bet_placed_found = true;
+            EXPECT_EQ(bp->bet_amount, 50);
+            EXPECT_EQ(bp->total_bet, 50);
+        } else if (const auto* rs = std::get_if<RoundStartedEvent>(&event)) {
+            round_started_found = true;
+            EXPECT_EQ(rs->initial_bet, 50);
+        }
+    }
+
+    EXPECT_TRUE(bet_placed_found);
+    EXPECT_TRUE(round_started_found);
+}
+
+TEST(GameEventTest, stand_emits_hand_stood_event) {
+    Game game = test_helpers::create_game();
+    game.start_round(100);
+    game.set_state(GameState::PlayerTurn);
+    static_cast<void>(game.poll_events());
+
+    game.stand();
+
+    auto events = game.poll_events();
+    bool hand_stood_found = false;
+    for (const auto& event : events) {
+        if (std::holds_alternative<HandStoodEvent>(event)) {
+            hand_stood_found = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(hand_stood_found);
+}
+
+TEST(GameEventTest, dealer_turn_started_emits_event) {
+    Game game = test_helpers::create_game();
+    game.start_round(100);
+    game.set_state(GameState::DealerTurn);
+    static_cast<void>(game.poll_events());
+
+    game.deal_dealer_cards();
+
+    auto events = game.poll_events();
+    bool dealer_turn_found = false;
+    for (const auto& event : events) {
+        if (std::holds_alternative<DealerTurnStartedEvent>(event)) {
+            dealer_turn_found = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(dealer_turn_found);
 }

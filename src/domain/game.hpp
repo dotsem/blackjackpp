@@ -8,14 +8,6 @@
 
 namespace domain {
 
-    enum class GameState : std::uint8_t {
-        WaitingForBets,
-        Dealing,
-        PlayerTurn,
-        DealerTurn,
-        RoundOver
-    };
-
     enum class GameResult : std::uint8_t {
         PlayerBust,
         DealerBust,
@@ -72,7 +64,10 @@ namespace domain {
         }
 
         void set_state(GameState new_state) {
-            state_ = new_state;
+            if (state_ != new_state) {
+                state_ = new_state;
+                events_.emplace_back(GameStateChangedEvent{ .new_state = new_state });
+            }
         }
 
         [[nodiscard]] const Player& player() const noexcept {
@@ -124,10 +119,12 @@ namespace domain {
             }
             discard_cards();
             place_bet(bet);
-            set_state(domain::GameState::Dealing);
+            events_.emplace_back(RoundStartedEvent{ .initial_bet = bet });
+            set_state(GameState::Dealing);
 
             if (deck_.needs_reshuffle()) {
                 deck_.reshuffle_discarded_into_deck();
+                events_.emplace_back(DeckReshuffledEvent{ .cards_remaining = deck_.cards().size() });
             }
 
             deal_initial_cards();
@@ -143,8 +140,8 @@ namespace domain {
             player_.clear_hands();
             dealer_.clear_hand();
             deck_.reset();
-            state_ = GameState::WaitingForBets;
             round_summary_ = RoundSummary{};
+            set_state(GameState::WaitingForBets);
         }
 
         void next_round() {
@@ -208,6 +205,10 @@ namespace domain {
             }
             player_.active_hand().bet = amount;
             player_.remove_chips(amount);
+            events_.emplace_back(BetPlacedEvent{
+                .bet_amount = amount,
+                .total_bet = total_bet(),
+                .remaining_chips = player_.chips() });
         }
 
         [[nodiscard]] int payout();
