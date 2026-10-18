@@ -27,6 +27,16 @@ namespace domain {
         [[nodiscard]] bool is_profit() const noexcept {
             return net_profit() > 0;
         }
+
+        [[nodiscard]] std::string_view outcome_string() const noexcept {
+            if (total_payout > total_bet) {
+                return "Profit";
+            }
+            if (total_payout == total_bet) {
+                return "Push";
+            }
+            return "Loss";
+        }
     };
 
     class Game {

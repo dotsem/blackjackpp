@@ -43,7 +43,7 @@ namespace presentation {
         BettingHud betting_hud_;
         RoundOverlay round_overlay_;
 
-        void sync_ui();
+        void poll_game_events();
     };
 
 } // namespace presentation

@@ -1,4 +1,5 @@
 #include "presentation/views/table_view/table_view.hpp"
+#include "domain/event.hpp"
 #include "domain/game.hpp"
 #include "presentation/layout.hpp"
 #include <SDL3/SDL_events.h>
@@ -19,7 +20,9 @@ namespace presentation {
         , betting_hud_(renderer_, fonts)
         , round_overlay_(renderer_, fonts) {
         card_sprites_.set_scale(CARD_SCALE);
-        sync_ui();
+        betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
+        betting_hud_.set_prompt("Play Blackjack! (B: Bet 10)");
+        poll_game_events();
     }
 
     SDL_AppResult TableView::handle_event(const SDL_Event& event) {
@@ -33,7 +36,6 @@ namespace presentation {
                     case SDLK_SPACE:
                         if (game_->can_hit()) {
                             game_->hit();
-                            sync_ui();
                         }
                         break;
                     case SDLK_RETURN:
@@ -42,25 +44,21 @@ namespace presentation {
                         } else if (game_->state() == domain::GameState::RoundOver) {
                             game_->next_round();
                         }
-                        sync_ui();
                         break;
                     case SDLK_D:
                         if (game_->can_double_down()) {
                             game_->double_down();
-                            sync_ui();
                         }
                         break;
                     case SDLK_S:
                         if (game_->can_split()) {
                             // game_->split();
-                            sync_ui();
                         }
                         break;
                     case SDLK_B:
                         if (game_->state() == domain::GameState::WaitingForBets) {
                             if (game_->can_place_bet(10)) {
                                 game_->start_round(10);
-                                sync_ui();
                             }
                         }
                         break;
@@ -75,6 +73,8 @@ namespace presentation {
 
     SDL_AppResult TableView::tick(float dt) {
         std::ignore = dt;
+
+        poll_game_events();
 
         background_.render(game_->deck().cards().size());
 
@@ -100,38 +100,80 @@ namespace presentation {
         return SDL_APP_CONTINUE;
     }
 
-    void TableView::sync_ui() {
-        switch (game_->state()) {
-            case domain::GameState::WaitingForBets:
-                betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
-                betting_hud_.set_prompt("Play Blackjack! (B: Bet 10)");
+    /// Polls the game for events and updates the view accordingly.
+    /// events not listed in here:
+    /// - DeckReshuffledEvent: TODO: handle shoe reshuffle notification
+    /// - HandStoodEvent
+    /// - GameStateChangedEvent: Present but empty to satisfy clang-tidy
+    ///     - Dealing
+    //      - RoundOver
+    void TableView::poll_game_events() {
+        for (const auto& event : game_->poll_events()) {
+            // lifecycle & shoe
+            if (const auto* e = std::get_if<domain::GameStateChangedEvent>(&event)) {
+                switch (e->new_state) {
+                    case domain::GameState::WaitingForBets:
+                        betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
+                        betting_hud_.set_prompt("Play Blackjack! (B: Bet 10)");
+                        dealer_hand_view_.clear();
+                        player_hand_view_.clear();
+                        round_overlay_.clear();
+                        break;
+                    case domain::GameState::Dealing:
+                        break;
+                    case domain::GameState::PlayerTurn:
+                        betting_hud_.set_prompt("Hit (SPACE) Or Stand (ENTER)");
+                        break;
+                    case domain::GameState::DealerTurn:
+                        betting_hud_.set_prompt("Dealer's Turn...");
+                        break;
+                    case domain::GameState::RoundOver:
+                        break;
+                }
+            } else if (std::get_if<domain::DeckReshuffledEvent>(&event) != nullptr) {
+                // TODO: handle shoe reshuffle notification
+            }
+            // betting & round start
+            else if (const auto* e = std::get_if<domain::BetPlacedEvent>(&event)) {
+                betting_hud_.set_balance(e->remaining_chips, e->total_bet);
+            } else if (std::get_if<domain::RoundStartedEvent>(&event) != nullptr) {
                 dealer_hand_view_.clear();
                 player_hand_view_.clear();
                 round_overlay_.clear();
-                break;
-            case domain::GameState::Dealing:
-                betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
+            }
+            // dealing
+            else if (const auto* e = std::get_if<domain::CardDealtEvent>(&event)) {
+                if (e->is_dealer) {
+                    dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value(true)));
+                } else {
+                    player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+                }
+            }
+            // player turn actions
+            else if (std::get_if<domain::ActiveHandChangedEvent>(&event) != nullptr || std::get_if<domain::HandBustedEvent>(&event) != nullptr) {
                 player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
-                dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value(true)));
-                break;
-            case domain::GameState::PlayerTurn:
-                betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
-                betting_hud_.set_prompt("Hit (SPACE) Or Stand (ENTER)");
+            } else if (const auto* e = std::get_if<domain::HandSplitEvent>(&event)) {
+                betting_hud_.set_balance(e->remaining_chips, game_->total_bet());
                 player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+            } else if (const auto* e = std::get_if<domain::HandDoubledDownEvent>(&event)) {
+                betting_hud_.set_balance(e->remaining_chips, game_->total_bet());
+                player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+            }
+            // dealer turn actions
+            else if (std::get_if<domain::DealerTurnStartedEvent>(&event) != nullptr) {
+                betting_hud_.set_prompt("Dealer's Turn...");
+            } else if (std::get_if<domain::HoleCardRevealedEvent>(&event) != nullptr) {
                 dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value(true)));
-                break;
-            case domain::GameState::DealerTurn:
-                betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
-                dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value(true)));
-                break;
-            case domain::GameState::RoundOver:
+            }
+            // round resolution
+            else if (const auto* e = std::get_if<domain::RoundOverEvent>(&event)) {
                 round_overlay_.show(
                     game_->round_summary(),
-                    game_->player().chips(),
+                    e->final_chips,
                     game_->player().active_hand().outcome_to_string());
                 player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
                 dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value()));
-                break;
+            }
         }
     }
 

@@ -3,6 +3,7 @@
 #include "hand.hpp"
 #include <cstddef>
 #include <stdexcept>
+#include <string>
 
 namespace {
     constexpr int DealerStandThreshold = 17;
@@ -195,10 +196,11 @@ namespace domain {
         player_.add_chips(win_sum);
         round_summary_ = RoundSummary{ .total_bet = bet_sum, .total_payout = win_sum };
         set_state(GameState::RoundOver);
+
         events_.emplace_back(RoundOverEvent{
             .total_payout = win_sum,
             .final_chips = player_.chips(),
-            .summary = round_summary_.is_profit() ? "Profit" : (win_sum == bet_sum ? "Push" : "Loss") });
+            .summary = std::string(round_summary_.outcome_string()) });
     }
 
     /// Win pays 1:1
