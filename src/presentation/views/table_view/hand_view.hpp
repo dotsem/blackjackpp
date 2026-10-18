@@ -20,7 +20,7 @@ namespace presentation {
 
         void render(const domain::Hand& hand, float start_x, float start_y, bool is_active = true);
         void set_score(std::string score_text);
-        void clear();
+        void clear_score();
 
     private:
         SDL_Renderer* renderer_;

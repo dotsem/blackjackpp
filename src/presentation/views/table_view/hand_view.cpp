@@ -52,7 +52,7 @@ namespace presentation {
         score_label_.set_text(std::move(score_text));
     }
 
-    void HandView::clear() {
+    void HandView::clear_score() {
         score_label_.set_text("");
     }
 

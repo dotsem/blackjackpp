@@ -6,6 +6,7 @@
 #include "presentation/assets/texture_manager.hpp"
 #include "presentation/views/table_view/betting_hud.hpp"
 #include "presentation/views/table_view/hand_view.hpp"
+#include "presentation/views/table_view/player_hand_view.hpp"
 #include "presentation/views/table_view/round_overlay.hpp"
 #include "presentation/views/table_view/table_background.hpp"
 #include "presentation/views/view.hpp"
@@ -39,7 +40,7 @@ namespace presentation {
 
         TableBackground background_;
         HandView dealer_hand_view_;
-        HandView player_hand_view_;
+        PlayerHandView player_hand_view_;
         BettingHud betting_hud_;
         RoundOverlay round_overlay_;
 

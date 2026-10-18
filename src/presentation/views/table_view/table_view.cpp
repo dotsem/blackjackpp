@@ -16,7 +16,7 @@ namespace presentation {
         , card_sprites_(CardSpriteSheet::load(textures))
         , background_(renderer_, card_sprites_)
         , dealer_hand_view_(renderer_, fonts, card_sprites_, ScorePlacement::Below)
-        , player_hand_view_(renderer_, fonts, card_sprites_, ScorePlacement::Above)
+        , player_hand_view_(renderer_, fonts, card_sprites_)
         , betting_hud_(renderer_, fonts)
         , round_overlay_(renderer_, fonts) {
         card_sprites_.set_scale(CARD_SCALE);
@@ -83,12 +83,8 @@ namespace presentation {
         const auto& player_hands = game_->player().hands();
         const auto active_idx = game_->player().active_hand_index();
         const float player_y = layout::VirtualHeight - layout::BorderPadding - card_sprites_.card_height();
-        const float hand_spacing = 300.0F; // TODO: dynamically calculate spacing based on number of hands and card width
 
-        for (std::size_t i = 0; i < player_hands.size(); ++i) {
-            const float hand_x = layout::BorderPadding + (static_cast<float>(i) * hand_spacing);
-            player_hand_view_.render(player_hands.at(i).hand, hand_x, player_y, i == active_idx);
-        }
+        player_hand_view_.render(player_hands, layout::BorderPadding, player_y, active_idx);
 
         if (game_->state() == domain::GameState::RoundOver) {
             round_overlay_.render();
@@ -115,8 +111,8 @@ namespace presentation {
                     case domain::GameState::WaitingForBets:
                         betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
                         betting_hud_.set_prompt("Play Blackjack! (B: Bet 10)");
-                        dealer_hand_view_.clear();
-                        player_hand_view_.clear();
+                        dealer_hand_view_.clear_score();
+                        player_hand_view_.clear_scores();
                         round_overlay_.clear();
                         break;
                     case domain::GameState::Dealing:
@@ -137,8 +133,8 @@ namespace presentation {
             else if (const auto* e = std::get_if<domain::BetPlacedEvent>(&event)) {
                 betting_hud_.set_balance(e->remaining_chips, e->total_bet);
             } else if (std::get_if<domain::RoundStartedEvent>(&event) != nullptr) {
-                dealer_hand_view_.clear();
-                player_hand_view_.clear();
+                dealer_hand_view_.clear_score();
+                player_hand_view_.clear_scores();
                 round_overlay_.clear();
             }
             // dealing
@@ -146,18 +142,18 @@ namespace presentation {
                 if (e->is_dealer) {
                     dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value(true)));
                 } else {
-                    player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+                    player_hand_view_.set_score(game_->player().active_hand_index(), std::format("{}", game_->player().active_hand().hand.value()));
                 }
             }
             // player turn actions
             else if (std::get_if<domain::ActiveHandChangedEvent>(&event) != nullptr || std::get_if<domain::HandBustedEvent>(&event) != nullptr) {
-                player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+                player_hand_view_.set_score(game_->player().active_hand_index(), std::format("{}", game_->player().active_hand().hand.value()));
             } else if (const auto* e = std::get_if<domain::HandSplitEvent>(&event)) {
                 betting_hud_.set_balance(e->remaining_chips, game_->total_bet());
-                player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+                player_hand_view_.set_score(game_->player().active_hand_index(), std::format("{}", game_->player().active_hand().hand.value()));
             } else if (const auto* e = std::get_if<domain::HandDoubledDownEvent>(&event)) {
                 betting_hud_.set_balance(e->remaining_chips, game_->total_bet());
-                player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+                player_hand_view_.set_score(game_->player().active_hand_index(), std::format("{}", game_->player().active_hand().hand.value()));
             }
             // dealer turn actions
             else if (std::get_if<domain::DealerTurnStartedEvent>(&event) != nullptr) {
@@ -171,7 +167,7 @@ namespace presentation {
                     game_->round_summary(),
                     e->final_chips,
                     game_->player().active_hand().outcome_to_string());
-                player_hand_view_.set_score(std::format("{}", game_->player().active_hand().hand.value()));
+                player_hand_view_.set_score(game_->player().active_hand_index(), std::format("{}", game_->player().active_hand().hand.value()));
                 dealer_hand_view_.set_score(std::format("{}", game_->dealer().hand().value()));
             }
         }
