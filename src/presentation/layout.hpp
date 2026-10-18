@@ -71,6 +71,7 @@ namespace presentation::layout {
             case Anchor::None:
                 return { .x = x, .y = y };
         }
+        return { .x = x, .y = y };
     }
 
     constexpr SDL_FPoint anchorInRect(const SDL_FRect& rect, Anchor anchor) noexcept {
