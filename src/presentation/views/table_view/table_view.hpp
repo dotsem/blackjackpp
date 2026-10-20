@@ -49,6 +49,12 @@ namespace presentation {
         int temp_bet_amount_{ MIN_BET };
 
         void poll_game_events();
+        void apply_event(const domain::GameEvent& event);
+        void on_state_changed(const domain::GameStateChangedEvent& event);
+        void on_round_over(const domain::RoundOverEvent& event);
+
+        SDL_AppResult handle_key_down(SDL_Keycode key);
+        void adjust_bet(int delta);
     };
 
 } // namespace presentation
