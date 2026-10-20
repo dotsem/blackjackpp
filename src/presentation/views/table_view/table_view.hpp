@@ -18,6 +18,8 @@ namespace presentation {
     class TableView : public View {
     public:
         static constexpr float CARD_SCALE = 4.0F;
+        static constexpr int BET_STEP = 25;
+        static constexpr int MIN_BET = 50;
 
         TableView(SDL_Renderer* renderer, TextureManager& textures, FontManager& fonts, domain::Game* game);
         ~TableView() override = default;
@@ -43,6 +45,8 @@ namespace presentation {
         PlayerHandView player_hand_view_;
         BettingHud betting_hud_;
         RoundOverlay round_overlay_;
+
+        int temp_bet_amount_{ MIN_BET };
 
         void poll_game_events();
     };

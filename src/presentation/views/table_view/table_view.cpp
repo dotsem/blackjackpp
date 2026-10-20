@@ -1,4 +1,5 @@
 #include "presentation/views/table_view/table_view.hpp"
+#include "SDL3/SDL_keycode.h"
 #include "domain/event.hpp"
 #include "domain/game.hpp"
 #include "presentation/layout.hpp"
@@ -21,7 +22,7 @@ namespace presentation {
         , round_overlay_(renderer_, fonts) {
         card_sprites_.set_scale(CARD_SCALE);
         betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
-        betting_hud_.set_prompt("Play Blackjack! (B: Bet 10)");
+        betting_hud_.set_prompt(std::format("Play Blackjack! (B: Bet {})", temp_bet_amount_));
         poll_game_events();
     }
 
@@ -57,9 +58,21 @@ namespace presentation {
                         break;
                     case SDLK_B:
                         if (game_->state() == domain::GameState::WaitingForBets) {
-                            if (game_->can_place_bet(10)) {
-                                game_->start_round(10);
+                            if (game_->can_place_bet(temp_bet_amount_)) {
+                                game_->start_round(temp_bet_amount_);
                             }
+                        }
+                        break;
+                    case SDLK_UP:
+                        if (game_->can_place_bet(temp_bet_amount_ + BET_STEP)) {
+                            temp_bet_amount_ += BET_STEP;
+                            betting_hud_.set_prompt(std::format("Play Blackjack! (B: Bet {})", temp_bet_amount_));
+                        }
+                        break;
+                    case SDLK_DOWN:
+                        if (temp_bet_amount_ - BET_STEP >= MIN_BET) {
+                            temp_bet_amount_ -= BET_STEP;
+                            betting_hud_.set_prompt(std::format("Play Blackjack! (B: Bet {})", temp_bet_amount_));
                         }
                         break;
                     default:
@@ -110,7 +123,11 @@ namespace presentation {
                 switch (e->new_state) {
                     case domain::GameState::WaitingForBets:
                         betting_hud_.set_balance(game_->player().chips(), game_->total_bet());
-                        betting_hud_.set_prompt("Play Blackjack! (B: Bet 10)");
+                        if (game_->player().chips() < MIN_BET) {
+                            betting_hud_.set_prompt("You lost all your money! Restart your computer to play again.");
+                        } else {
+                            betting_hud_.set_prompt(std::format("Play Blackjack! (B: Bet {})", temp_bet_amount_));
+                        }
                         dealer_hand_view_.clear_score();
                         player_hand_view_.clear_scores();
                         round_overlay_.clear();
@@ -163,6 +180,8 @@ namespace presentation {
             }
             // round resolution
             else if (const auto* e = std::get_if<domain::RoundOverEvent>(&event)) {
+                temp_bet_amount_ = 50;
+                betting_hud_.set_balance(e->final_chips, 0);
                 round_overlay_.show(
                     game_->round_summary(),
                     e->final_chips,
