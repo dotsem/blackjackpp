@@ -6,7 +6,7 @@ namespace presentation {
     HandView::HandView(SDL_Renderer* renderer, FontManager& fonts, CardSpriteSheet& card_sprites, ScorePlacement placement)
         : renderer_(renderer)
         , card_sprites_(&card_sprites)
-        , score_label_(renderer_, fonts.lg(), "", SDL_Color{ .r = 255, .g = 255, .b = 255, .a = 255 })
+        , score_label_(renderer_, fonts.lg(), "", color::Color{ 255, 255, 255, 255 })
         , placement_(placement) {
     }
 
@@ -24,7 +24,7 @@ namespace presentation {
             const auto& dealt = cards.at(i);
             const SDL_FPoint position{
                 .x = start_x + (static_cast<float>(i) * card_step),
-                .y = start_y
+                .y = start_y,
             };
 
             if (!dealt.is_face_up) {

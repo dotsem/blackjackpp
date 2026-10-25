@@ -5,8 +5,8 @@
 namespace presentation {
 
     RoundOverlay::RoundOverlay(SDL_Renderer* renderer, FontManager& fonts)
-        : summary_label_(renderer, fonts.lg(), "", SDL_Color{ .r = 255, .g = 255, .b = 255, .a = 255 })
-        , outcome_label_(renderer, fonts.xxxl(), "", SDL_Color{ .r = 255, .g = 255, .b = 255, .a = 255 }) {
+        : summary_label_(renderer, fonts.lg(), "", color::Color{ 255, 255, 255, 255 })
+        , outcome_label_(renderer, fonts.xxxl(), "", color::Color{ 255, 255, 255, 255 }) {
     }
 
     void RoundOverlay::render() {

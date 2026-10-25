@@ -1,12 +1,13 @@
 #include "presentation/views/table_view/betting_hud.hpp"
+#include "presentation/color.hpp"
 #include "presentation/layout.hpp"
 #include <format>
 
 namespace presentation {
 
     BettingHud::BettingHud(SDL_Renderer* renderer, FontManager& fonts)
-        : balance_label_(renderer, fonts.lg(), "", SDL_Color{ .r = 255, .g = 255, .b = 255, .a = 255 })
-        , action_prompt_label_(renderer, fonts.xxxl(), "", SDL_Color{ .r = 255, .g = 255, .b = 255, .a = 255 }) {
+        : balance_label_(renderer, fonts.lg(), "", color::Color{ 255, 255, 255, 255 })
+        , action_prompt_label_(renderer, fonts.xxxl(), "", color::Color{ 255, 255, 255, 255 }) {
     }
 
     void BettingHud::render() {

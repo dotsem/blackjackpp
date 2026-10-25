@@ -3,6 +3,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL_fur_coat/font.hpp"
 #include "SDL_fur_coat/texture.hpp"
+#include "presentation/color.hpp"
 #include "presentation/components/animations/animations.hpp"
 #include "presentation/layout.hpp"
 #include <string>
@@ -10,7 +11,7 @@
 namespace presentation {
     class Text {
     public:
-        Text(SDL_Renderer* renderer, const sdl::Font& font, std::string text, SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 })
+        Text(SDL_Renderer* renderer, const sdl::Font& font, std::string text, color::Color color = { 255, 255, 255, 255 })
             : renderer_(renderer)
             , font_(&font)
             , color_(color) {
@@ -60,8 +61,15 @@ namespace presentation {
             return text_;
         }
 
-        [[nodiscard]] SDL_Color color() const noexcept {
+        [[nodiscard]] color::Color color() const noexcept {
             return color_;
+        }
+
+        void set_color(color::Color color) {
+            if (color != color_) {
+                color_ = color;
+                rebuild_texture();
+            }
         }
 
         [[nodiscard]] const sdl::Font* font() const noexcept {
@@ -115,7 +123,7 @@ namespace presentation {
     private:
         SDL_Renderer* renderer_;
         const sdl::Font* font_;
-        SDL_Color color_;
+        color::Color color_;
         std::string text_;
         sdl::Texture texture_;
 
