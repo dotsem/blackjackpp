@@ -82,7 +82,8 @@ TEST(GameTest, start_round_reshuffles_discards_when_needed) {
     game.start_round(100);
 
     EXPECT_EQ(game.deck().discarded_cards().size(), 0);
-    EXPECT_EQ(game.deck().cards().size(), 52 - 4);
+    const size_t cards_on_table = game.player().active_hand().hand.size() + game.dealer().hand().size();
+    EXPECT_EQ(game.deck().cards().size(), 52 - cards_on_table);
     EXPECT_EQ(game.player().active_hand().bet, 100);
 }
 
