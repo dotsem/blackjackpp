@@ -68,7 +68,8 @@ namespace domain {
             } else {
                 events_.emplace_back(ActiveHandChangedEvent{
                     .previous_hand_index = prev_index,
-                    .current_hand_index = player_.active_hand_index() });
+                    .current_hand_index = player_.active_hand_index(),
+                });
             }
         }
     }
@@ -88,7 +89,8 @@ namespace domain {
         } else {
             events_.emplace_back(ActiveHandChangedEvent{
                 .previous_hand_index = prev_index,
-                .current_hand_index = player_.active_hand_index() });
+                .current_hand_index = player_.active_hand_index(),
+            });
         }
     }
 
@@ -108,7 +110,8 @@ namespace domain {
             .hand_index = hand_idx,
             .added_bet = added_bet,
             .total_hand_bet = player_.active_hand().bet,
-            .remaining_chips = player_.chips() });
+            .remaining_chips = player_.chips(),
+        });
 
         deal_card_to_player_current_hand();
 
@@ -126,7 +129,8 @@ namespace domain {
         } else {
             events_.emplace_back(ActiveHandChangedEvent{
                 .previous_hand_index = hand_idx,
-                .current_hand_index = player_.active_hand_index() });
+                .current_hand_index = player_.active_hand_index(),
+            });
         }
     }
 
@@ -150,7 +154,8 @@ namespace domain {
             .source_hand_index = src_hand_idx,
             .new_hand_index = new_hand_idx,
             .split_bet = split_bet,
-            .remaining_chips = player_.chips() });
+            .remaining_chips = player_.chips(),
+        });
 
         deal_card_to_player_current_hand();
         deal_card_to_player_hand(new_hand_idx);
@@ -200,7 +205,8 @@ namespace domain {
         events_.emplace_back(RoundOverEvent{
             .total_payout = win_sum,
             .final_chips = player_.chips(),
-            .summary = std::string(round_summary_.outcome_string()) });
+            .summary = std::string(round_summary_.outcome_string()),
+        });
     }
 
     /// Win pays 1:1
